@@ -7,8 +7,8 @@ import { RegistrationComponent } from './components/registration/registration.co
 import { LoginComponent } from './components/login/login.component';
 import { HomePageComponent } from './components/home-page/home-page.component';
 import { HeadBarComponent } from './components/head-bar/head-bar.component';
-import { SearchComponent } from './services/components/search/search.component';
-import { ProfileComponent } from './services/components/profile/profile.component';
+import { SearchComponent } from './components/search/search.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { ThreadComponent } from './components/thread/thread.component';
 
 @NgModule({
