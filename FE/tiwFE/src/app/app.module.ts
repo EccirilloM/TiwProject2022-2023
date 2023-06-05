@@ -10,6 +10,7 @@ import { HeadBarComponent } from './components/head-bar/head-bar.component';
 import { SearchComponent } from './components/search/search.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ThreadComponent } from './components/thread/thread.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ThreadComponent } from './components/thread/thread.component';
     HeadBarComponent,
     SearchComponent,
     ProfileComponent,
-    ThreadComponent
+    ThreadComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
