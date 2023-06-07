@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  username     String     @unique
+  password     String
+  profileImage String?    // Opzionale, può essere NULL
+  posts        Post[]
+  threads      Thread[]
+  likes        Like[]
+  dislikes     Dislike[]
+  following    Follow[]   @relation("Follows")
+  followers    Follow[]   @relation("FollowedBy")
+  comments     Comment[]
+}
+
+model Follow {
+  id          Int      @id @default(autoincrement())
+  followedId  Int
+  followerId  Int
+  followed    User     @relation("FollowedBy", fields: [followedId], references: [id])
+  follower    User     @relation("Follows", fields: [followerId], references: [id])
+}
+
+model Post {
+  id         Int      @id @default(autoincrement())
+  text       String
+  createdAt  DateTime @default(now())
+  image      String?  // Opzionale, può essere NULL
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  likes      Like[]
+  dislikes   Dislike[]
+  comments   Comment[]
+  threadId   Int
+  thread     Thread   @relation(fields: [threadId], references: [id])
+}
+
+model Comment {
+  id       Int      @id @default(autoincrement())
+  text     String
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
+  postId   Int
+  post     Post     @relation(fields: [postId], references: [id])
+  likes    Like[]
+  dislikes Dislike[]
+  threadId Int
+  thread   Thread   @relation(fields: [threadId], references: [id])
+}
+
+model Thread {
+  id         Int       @id @default(autoincrement())
+  title      String
+  createdAt  DateTime  @default(now())
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id])
+  posts      Post[]
+  comments   Comment[]
+  likes      Like[]
+  dislikes   Dislike[]
+}
+
+model Like {
+  id       Int     @id @default(autoincrement())
+  userId   Int
+  user     User    @relation(fields: [userId], references: [id])
+  postId   Int?
+  post     Post?   @relation(fields: [postId], references: [id])
+  commentId Int?
+  comment  Comment? @relation(fields: [commentId], references: [id])
+  threadId Int?
+  thread   Thread?  @relation(fields: [threadId], references: [id])
+}
+
+model Dislike {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  user      User    @relation(fields: [userId], references: [id])
+  postId    Int?
+  post      Post?   @relation(fields: [postId], references: [id])
+  commentId Int?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  threadId  Int?
+  thread    Thread?  @relation(fields: [threadId], references: [id])
+}
+
