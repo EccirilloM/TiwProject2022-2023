@@ -10,7 +10,7 @@ const validateEmail = (email) => {
 };
 
 // Registration Controller
-export const register = async (req, res) => {
+export const registration = async (req, res) => {
   try {
     let { username, password, email } = req.body;
 

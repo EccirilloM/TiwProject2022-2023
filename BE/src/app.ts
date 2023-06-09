@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import {router as authRoute} from "./routes/auth"
 //IMPORT ROUTES
 
 const app = express();
@@ -14,7 +15,7 @@ const port = 3000;
 app.use(express.json());
 
 //API
-//app.use("/api/person", personRoute);
+app.use("/api/auth", authRoute);
 
 app.listen(port, () => {
     return console.log(`Express is listening at http://localhost:${port}`);

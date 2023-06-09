@@ -20,22 +20,29 @@ export class RegistrationComponent implements OnInit {
   ngOnInit() {}
 
   registerPerson() {
-    if (this.username && this.password && this.status) {
+    if (this.username && this.password && this.email && this.ripetiPassword) {
+      if (this.password !== this.ripetiPassword) {
+        this.errorMessage = 'Passwords do not match.';
+        this.successMessage = '';
+        return;
+      }
+  
       const newPerson = {
         username: this.username,
         password: this.password,
-        status: this.status,
+        email: this.email,
       };
-      
+        
       this.authService.registration(newPerson).subscribe({
-        next:(data: any) => {
+        next: (data: any) => {
           this.successMessage = 'Registration successful!';
           this.errorMessage = '';
           this.username = '';
           this.password = '';
-          this.status = '';
+          this.email = '';
+          this.ripetiPassword = '';
         },
-        error:(error) => {
+        error: (error) => {
           this.errorMessage = 'Registration failed. Please try again.';
           this.successMessage = '';
         }
@@ -44,5 +51,5 @@ export class RegistrationComponent implements OnInit {
       this.errorMessage = 'Please fill in all fields.';
       this.successMessage = '';
     }
-  }
+  }  
 }

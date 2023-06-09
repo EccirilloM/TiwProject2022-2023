@@ -32,26 +32,21 @@ export class AuthService {
       .pipe(
         tap((response) => {
           localStorage.setItem('token', response.token);
+          this.setIsAuthenticated(true);
         })
       );
   }
 
   login(credentials: { username: string; password: string }): Observable<any> {
     const headers = this.getHttpHeaders();
-    console.log('Headers:', headers); // Aggiungi questo log per verificare l'header di autorizzazione
+    console.log('Headers:', headers); // You can remove this log if not needed
   
     return this.http
       .post<any>(`${this.backEndUrl}/api/auth/login`, credentials)
       .pipe(
         tap((response) => {
-          console.log('login response:', response); // aggiungi questo log
+          console.log('login response:', response); // You can remove this log if not needed
           localStorage.setItem('token', response.token);
-          
-          // Estrai il ruolo dal token e salvalo nel localStorage
-          const payload = JSON.parse(atob(response.token.split('.')[1]));
-          const role = payload.role;
-          localStorage.setItem('role', role);
-          console.log('stored role:', localStorage.getItem('role')); // aggiungi questo log
           this.setIsAuthenticated(true);
         })
       );

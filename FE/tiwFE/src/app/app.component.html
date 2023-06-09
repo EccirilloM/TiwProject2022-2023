@@ -1,7 +1,10 @@
-<div>
+<div *ngIf="(authService.isAuthenticated$ | async) && (router.url !== '/login')">
   <app-head-bar></app-head-bar>
 </div>
 
-<div>
-  <router-outlet></router-outlet>
+<div class="mx-64">
+  <div class="flex justify-center items-center h-full">
+    <router-outlet></router-outlet>
+  </div>
 </div>
+  
