@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, Event } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-head-bar',
@@ -11,7 +12,7 @@ export class HeadbarComponent implements OnInit {
   currentRoute: string = '';
   title: string = "ALIAS TWITTER";
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.currentRoute = this.router.url.split('/')[1];
   }
 
@@ -23,5 +24,10 @@ export class HeadbarComponent implements OnInit {
       this.currentRoute = navigationEndEvent.urlAfterRedirects.split('/')[1];
     });
   }
+
+  logout(): void {
+    this.authService.logout();
+  }
+
 }
 

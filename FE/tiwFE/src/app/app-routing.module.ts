@@ -9,7 +9,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ThreadComponent } from './components/thread/thread.component';
 
 const routes: Routes = [
-  { path: "", pathMatch: "full", redirectTo: "/login" },
+  { path: "", pathMatch: "full", redirectTo: "/home" },
   { path: "login", component: LoginComponent },
   { path: "registration", component: RegistrationComponent },
 

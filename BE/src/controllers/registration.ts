@@ -15,11 +15,16 @@ export const registration = async (req, res) => {
     let { username, password, email } = req.body;
 
     username = username.trim(); // trim the username
+    email = email.trim();
 
     if (!username || !password || !email) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-
+    
+    if (password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long." });
+    }
+    
     if (!validateEmail(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }

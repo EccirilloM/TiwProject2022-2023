@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registration',
@@ -15,41 +16,57 @@ export class RegistrationComponent implements OnInit {
   successMessage: string = '';
   errorMessage: string = '';
 
-  constructor(private authService: AuthService ) {}
+  constructor(private authService: AuthService, private router: Router ) {}
 
   ngOnInit() {}
 
   registerPerson() {
-    if (this.username && this.password && this.email && this.ripetiPassword) {
-      if (this.password !== this.ripetiPassword) {
-        this.errorMessage = 'Passwords do not match.';
-        this.successMessage = '';
-        return;
-      }
-  
-      const newPerson = {
-        username: this.username,
-        password: this.password,
-        email: this.email,
-      };
-        
-      this.authService.registration(newPerson).subscribe({
-        next: (data: any) => {
-          this.successMessage = 'Registration successful!';
-          this.errorMessage = '';
-          this.username = '';
-          this.password = '';
-          this.email = '';
-          this.ripetiPassword = '';
-        },
-        error: (error) => {
-          this.errorMessage = 'Registration failed. Please try again.';
-          this.successMessage = '';
-        }
-      });
-    } else {
+    this.errorMessage = '';
+    this.successMessage = '';
+    
+    if (!this.username || !this.password || !this.email || !this.ripetiPassword) {
       this.errorMessage = 'Please fill in all fields.';
-      this.successMessage = '';
+      return;
     }
-  }  
+  
+    if (this.password.length < 8) {
+      this.errorMessage = 'Password too short. It should be at least 8 characters.';
+      return;
+    }
+  
+    let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.email)) {
+      this.errorMessage = 'Invalid email address.';
+      return;
+    }
+  
+    if (this.password !== this.ripetiPassword) {
+      this.errorMessage = 'Passwords do not match.';
+      return;
+    }
+    
+    const newPerson = {
+      username: this.username.trim(),
+      password: this.password,
+      email: this.email.trim(),
+    };
+      
+    this.authService.registration(newPerson).subscribe({
+      next: (data: any) => {
+        this.successMessage = 'Registration successful!';
+        this.errorMessage = '';
+        this.username = '';
+        this.password = '';
+        this.email = '';
+        this.ripetiPassword = '';
+
+        // this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        this.errorMessage = 'Registration failed. Please try again.';
+        this.successMessage = '';
+      }
+    });
+  }
+  
 }
