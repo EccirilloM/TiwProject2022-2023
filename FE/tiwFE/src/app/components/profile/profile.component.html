@@ -7,8 +7,9 @@
     </div>
     <div class="flex flex-col items-center -mt-20">
       <!-- Aggiunto un'interpolazione per l'URL del profile image -->
-      <img [src]="user?.profileImage"
-        class="w-40 border-4 border-white rounded-full cursor-pointer" (click)="fileInput.click()">
+      <img [src]="profileImageUrl"
+      class="profile-image w-40 border-4 border-white cursor-pointer"
+      (click)="fileInput.click()">
       <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)"/>
       <div class="flex items-center space-x-2 mt-2">
         <!-- Aggiunto un'interpolazione per il nome utente -->

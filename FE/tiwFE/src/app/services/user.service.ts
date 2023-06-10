@@ -22,6 +22,12 @@ export class UserService {
     const formData = new FormData();
     formData.append('username', username);
     formData.append('photo', image);
-    return this.http.post(`${this.backEndUrl}/api/user/updatePhoto`, formData);
-  }
+
+    const headers = new HttpHeaders({
+        'Authorization': `Bearer ${this.authService.getToken()}`,
+    });
+
+    return this.http.post(`${this.backEndUrl}/api/user/updatePhoto`, formData, { headers });
+}
+
 }

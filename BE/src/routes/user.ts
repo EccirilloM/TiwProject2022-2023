@@ -8,6 +8,6 @@ router.use(express.json());
 
 //FAI UN CONTROLLER PER OGNI END-POINT
 router.get("/getUser",[authMiddleware], controller.getUser);
-router.post("/updatePhoto", [upload], controller.updatePhoto);
+router.post("/updatePhoto", [authMiddleware, upload], controller.updatePhoto);
 
 export {router};

@@ -14,6 +14,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ThreadComponent } from './components/thread/thread.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { HeadbarComponent } from './components/head-bar/head-bar.component';
+import { ConfirmChangeImageComponent } from './components/confirm-change-image/confirm-change-image.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { HeadbarComponent } from './components/head-bar/head-bar.component';
     SearchComponent,
     ProfileComponent,
     ThreadComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ConfirmChangeImageComponent
   ],
   imports: [
     ReactiveFormsModule,

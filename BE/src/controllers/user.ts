@@ -92,33 +92,27 @@ export const searchUser = async (req, res) => {
 };
 
 export const updatePhoto = async (req: Request, res: Response) => {
+  if (!req.file) {
+      res.status(400).send('No file uploaded.');
+      return;
+  }
+
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        username: req.body.username,
-      },
-    });
+      // Utilizziamo un'asserzione di tipo qui per garantire a TypeScript che 'req.user' esiste
+      const user = await prisma.user.findUnique({ where: { id: (req as any).user.id } });
+      if (!user) {
+          res.status(404).send('User not found');
+          return;
+      }
 
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+      await prisma.user.update({
+          where: { id: (req as any).user.id },
+          data: { profileImage: req.file.filename },
+      });
 
-    const newImageName = `${req.body.username}.jpg`;
-
-    // Update the user record in the database
-    const updatedUser = await prisma.user.update({
-      where: {
-        username: req.body.username,
-      },
-      data: {
-        profileImage: newImageName,
-      },
-    });
-
-    res.json(updatedUser);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'An error occurred while updating the photo' });
+      res.status(200).send(user);
+  } catch (err) {
+      res.status(500).send(err);
   }
 };
 
