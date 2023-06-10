@@ -44,6 +44,7 @@ export const registration = async (req, res) => {
         username: username,
         password: password,
         email: email,
+        profileImage: "none.jpg"
       },
     });
 

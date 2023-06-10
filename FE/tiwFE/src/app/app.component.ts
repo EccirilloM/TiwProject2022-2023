@@ -17,6 +17,7 @@ export class AppComponent {
     );
   }
   ngOnInit(): void {
+    console.log("INIZIO DELL'APP")
     this.authService.logout();
     window.addEventListener('beforeunload', (event) => {
       this.authService.logout();

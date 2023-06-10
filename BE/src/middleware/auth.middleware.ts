@@ -14,7 +14,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: number; username: string; role: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: number};
 
     const user = await prisma.user.findUnique({
       where: {

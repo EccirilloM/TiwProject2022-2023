@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 })
 export class UserService {
 
-  private backEndUrl = "http://localhost:3000";
+  public backEndUrl = "http://localhost:3000";
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -16,5 +16,12 @@ export class UserService {
     return this.http.get<any>(`${this.backEndUrl}/api/user/getUser`, {
       headers: this.authService.getHttpHeaders(),
     });
+  }
+
+  updatePhoto(username: string, image: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('photo', image);
+    return this.http.post(`${this.backEndUrl}/api/user/updatePhoto`, formData);
   }
 }
