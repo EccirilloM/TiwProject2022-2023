@@ -23,7 +23,14 @@ export const getUser = async (req, res) => {
           email: true,
           username: true,
           profileImage: true,
-          posts: {
+          threads: {
+            select: {
+              id: true,
+              title: true,
+              createdAt: true
+            },
+          },
+          messages: {
             select: {
               id: true,
               text: true,
@@ -31,11 +38,10 @@ export const getUser = async (req, res) => {
               image: true
             },
           },
-          threads: {
+          comments: {
             select: {
               id: true,
-              title: true,
-              createdAt: true
+              text: true
             },
           },
           following: {
@@ -50,16 +56,11 @@ export const getUser = async (req, res) => {
               followerId: true
             },
           },
-          comments: {
-            select: {
-              id: true,
-              text: true
-            },
-          },
+          
           likes: {
             select: {
               id: true,
-              postId: true,
+              messageId: true,
               commentId: true,
               threadId: true
             },
@@ -67,7 +68,7 @@ export const getUser = async (req, res) => {
           dislikes: {
             select: {
               id: true,
-              postId: true,
+              messageId: true,
               commentId: true,
               threadId: true
             },
@@ -90,6 +91,10 @@ export const getAllUsers = async (req, res) => {
 
 export const searchUser = async (req, res) => {
 };
+
+export const searchThread = async (req, res) => {
+};
+
 
 export const updatePhoto = async (req: Request, res: Response) => {
   if (!req.file) {

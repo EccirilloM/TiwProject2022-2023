@@ -16,24 +16,27 @@ model User {
   username     String     @unique
   password     String
   profileImage String?    // Opzionale, può essere NULL
-  posts        Post[]
+  comments     Comment[]
+  messages     Message[]
   threads      Thread[]
   likes        Like[]
   dislikes     Dislike[]
   following    Follow[]   @relation("Follows")
   followers    Follow[]   @relation("FollowedBy")
-  comments     Comment[]
 }
 
-model Follow {
-  id          Int      @id @default(autoincrement())
-  followedId  Int
-  followerId  Int
-  followed    User     @relation("FollowedBy", fields: [followedId], references: [id])
-  follower    User     @relation("Follows", fields: [followerId], references: [id])
+model Thread {
+  id         Int       @id @default(autoincrement())
+  title      String
+  createdAt  DateTime  @default(now())
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id])
+  messages   Message[]
+  likes      Like[]
+  dislikes   Dislike[]
 }
 
-model Post {
+model Message {
   id         Int      @id @default(autoincrement())
   text       String
   createdAt  DateTime @default(now())
@@ -52,32 +55,27 @@ model Comment {
   text     String
   userId   Int
   user     User     @relation(fields: [userId], references: [id])
-  postId   Int
-  post     Post     @relation(fields: [postId], references: [id])
   likes    Like[]
   dislikes Dislike[]
-  threadId Int
-  thread   Thread   @relation(fields: [threadId], references: [id])
+  messageId Int
+  message   Message   @relation(fields: [messageId], references: [id])
 }
 
-model Thread {
-  id         Int       @id @default(autoincrement())
-  title      String
-  createdAt  DateTime  @default(now())
-  userId     Int
-  user       User      @relation(fields: [userId], references: [id])
-  posts      Post[]
-  comments   Comment[]
-  likes      Like[]
-  dislikes   Dislike[]
+
+model Follow {
+  id          Int      @id @default(autoincrement())
+  followedId  Int
+  followerId  Int
+  followed    User     @relation("FollowedBy", fields: [followedId], references: [id])
+  follower    User     @relation("Follows", fields: [followerId], references: [id])
 }
 
 model Like {
   id       Int     @id @default(autoincrement())
   userId   Int
   user     User    @relation(fields: [userId], references: [id])
-  postId   Int?
-  post     Post?   @relation(fields: [postId], references: [id])
+  messageId   Int?
+  message     Message?   @relation(fields: [messageId], references: [id])
   commentId Int?
   comment  Comment? @relation(fields: [commentId], references: [id])
   threadId Int?
@@ -88,8 +86,8 @@ model Dislike {
   id        Int     @id @default(autoincrement())
   userId    Int
   user      User    @relation(fields: [userId], references: [id])
-  postId    Int?
-  post      Post?   @relation(fields: [postId], references: [id])
+  messageId    Int?
+  message      Message?   @relation(fields: [messageId], references: [id])
   commentId Int?
   comment   Comment? @relation(fields: [commentId], references: [id])
   threadId  Int?
