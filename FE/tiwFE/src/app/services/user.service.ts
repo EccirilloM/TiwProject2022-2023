@@ -28,6 +28,6 @@ export class UserService {
     });
 
     return this.http.post(`${this.backEndUrl}/api/user/updatePhoto`, formData, { headers });
-}
+  }
 
 }

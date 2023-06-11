@@ -47,6 +47,7 @@ export class AuthService {
         tap((response) => {
           console.log('login response:', response); // You can remove this log if not needed
           localStorage.setItem('token', response.token);
+          localStorage.setItem("username", response.username);
           this.setIsAuthenticated(true);
         })
       );

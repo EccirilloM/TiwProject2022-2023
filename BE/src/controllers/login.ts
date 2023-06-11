@@ -44,6 +44,7 @@ export const login = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token: token, // Include the JWT token in the response
+      username: user.username, // Include the username in the response
     });
   } catch (error) {
     console.error(error);

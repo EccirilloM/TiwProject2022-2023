@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { NgZone } from '@angular/core';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -15,7 +16,7 @@ export class ProfileComponent implements OnInit {
   //Serve per non darmi errori in console
   user: any = { username: '', email: ''};
 
-  constructor(private userService: UserService, private zone: NgZone) { }
+  constructor(private userService: UserService, private zone: NgZone, private router: Router) {}
 
   ngOnInit() {
     this.getUser();
@@ -34,17 +35,9 @@ export class ProfileComponent implements OnInit {
     error => console.error('There was an error!', error)
     );
   }
-  
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.userService.updatePhoto(this.user.username, file).subscribe(response => {
-        if (response.status === 'success') {
-          // Richiedi nuovamente l'utente dopo l'aggiornamento dell'immagine
-          this.getUser();
-        }
-      });
-    }
+
+  onProfileImageClick() {
+    this.router.navigate(['/confirmChangeImageProfile']);
   }
 
 

@@ -1,22 +1,20 @@
 <div class="h-full bg-gray-200 p-8">
   <div class="bg-white rounded-lg shadow-xl pb-8">
     <div class="w-full h-[125px]">
-      <!-- Aggiunto un'interpolazione per l'URL del background image -->
       <img src="https://vojislavd.com/ta-template-demo/assets/img/profile-background.jpg"
         class="w-full h-full rounded-tl-lg rounded-tr-lg">
     </div>
     <div class="flex flex-col items-center -mt-20">
-      <!-- Aggiunto un'interpolazione per l'URL del profile image -->
       <img [src]="profileImageUrl"
       class="profile-image w-40 border-4 border-white cursor-pointer"
-      (click)="fileInput.click()">
-      <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)"/>
+      (click)="onProfileImageClick()">
       <div class="flex items-center space-x-2 mt-2">
-        <!-- Aggiunto un'interpolazione per il nome utente -->
         <p class="text-2xl">{{user?.username}}</p>
       </div>
     </div>
   </div>
+
+
 
   <!-- PERSONAL INFO -->
   <div class="my-4 flex flex-col 2xl:flex-row space-y-4 2xl:space-y-0 2xl:space-x-4">
