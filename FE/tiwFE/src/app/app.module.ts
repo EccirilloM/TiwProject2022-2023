@@ -15,6 +15,9 @@ import { ThreadComponent } from './components/thread/thread.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { HeadbarComponent } from './components/head-bar/head-bar.component';
 import { ConfirmChangeImageComponent } from './components/confirm-change-image/confirm-change-image.component';
+import { AuthService } from './services/auth.service';
+import { UserService } from './services/user.service';
+import { ThreadService } from './services/thread.service';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,11 @@ import { ConfirmChangeImageComponent } from './components/confirm-change-image/c
     HttpClientModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    AuthService,
+    UserService,
+    ThreadService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

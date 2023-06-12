@@ -86,16 +86,6 @@ export const getUser = async (req, res) => {
   }
 };
 
-export const getAllUsers = async (req, res) => {
-};
-
-export const searchUser = async (req, res) => {
-};
-
-export const searchThread = async (req, res) => {
-};
-
-
 export const updatePhoto = async (req: Request, res: Response) => {
   if (!req.file) {
       res.status(400).send('No file uploaded.');
@@ -121,9 +111,230 @@ export const updatePhoto = async (req: Request, res: Response) => {
   }
 };
 
+export const searchUser = async (req, res) => {
+  try {
+    const searchTerm = req.query.term;
+
+    const users = await prisma.user.findMany({
+      where: {
+        username: {
+          contains: searchTerm,
+        },
+      },
+      select: {
+        id: true,
+        username: true,
+        profileImage: true,
+        // Puoi aggiungere qui altri attributi se necessario
+      },
+    });
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const searchThread = async (req, res) => {
+  try {
+    const searchTerm = req.query.term;
+
+    const threads = await prisma.thread.findMany({
+      where: {
+        title: {
+          contains: searchTerm,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        // Aggiungi qui altri attributi se necessario
+      },
+    });
+
+    // Converte la data di creazione in una stringa ISO
+    const formattedThreads = threads.map((thread) => ({
+      ...thread,
+      createdAt: thread.createdAt.toISOString(),
+    }));
+
+    res.json(formattedThreads);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 export const follow = async (req, res) => {
+  try {
+    const followerId = (req as any).user.id; // l'id dell'utente che sta facendo la richiesta
+    const followedId = Number(req.params.id); // l'id dell'utente da seguire è passato come parametro dell'URL
+
+    // Verifica se l'utente esiste
+    const followedUser = await prisma.user.findUnique({ where: { id: followedId } });
+    if (!followedUser) {
+      return res.status(404).json({ message: "User to follow not found" });
+    }
+
+    // Crea il record Follow
+    const follow = await prisma.follow.create({
+      data: {
+        followedId: followedId,
+        followerId: followerId,
+      },
+    });
+
+    res.status(200).json(follow);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 export const unfollow = async (req, res) => {
+  try {
+    const followerId = (req as any).user.id; // l'id dell'utente che sta facendo la richiesta
+    const followedId = Number(req.params.id); // l'id dell'utente da non seguire più è passato come parametro dell'URL
+
+    // Verifica se l'utente esiste
+    const followedUser = await prisma.user.findUnique({ where: { id: followedId } });
+    if (!followedUser) {
+      return res.status(404).json({ message: "User to unfollow not found" });
+    }
+
+    // Elimina il record Follow
+    await prisma.follow.deleteMany({
+      where: {
+        followedId: followedId,
+        followerId: followerId,
+      },
+    });
+
+    res.status(200).json({ message: "Unfollowed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const isFollowing = async (req, res) => {
+  try {
+    const username = req.params.username;
+    const user = await prisma.user.findUnique({
+      where: { username },
+      select: { following: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json(user.following);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getAllUsers = async (req, res) => {
+};
+
+export const like = async (req, res) => {
+  const userId = (req as any).user.id;
+  const { entityId, entityType } = req.body;
+
+  const existingLike = await prisma.like.findFirst({
+    where: {
+      AND: [
+        { userId },
+        {
+          OR: [
+            { threadId: entityType === 'Thread' ? entityId : null },
+            { messageId: entityType === 'Message' ? entityId : null },
+            { commentId: entityType === 'Comment' ? entityId : null },
+          ],
+        },
+      ],
+    },
+  });
+
+  if (existingLike) {
+    await prisma.like.delete({ where: { id: existingLike.id } });
+  } else {
+    await prisma.like.create({
+      data: {
+        userId,
+        threadId: entityType === 'Thread' ? entityId : null,
+        messageId: entityType === 'Message' ? entityId : null,
+        commentId: entityType === 'Comment' ? entityId : null,
+      },
+    });
+
+    if (entityType === 'Thread') {
+      await prisma.dislike.deleteMany({
+        where: { userId, threadId: entityId },
+      });
+    } else if (entityType === 'Message') {
+      await prisma.dislike.deleteMany({
+        where: { userId, messageId: entityId },
+      });
+    } else if (entityType === 'Comment') {
+      await prisma.dislike.deleteMany({
+        where: { userId, commentId: entityId },
+      });
+    }
+  }
+
+  res.json({ success: true });
+};
+
+export const dislike = async (req, res) => {
+  const userId = (req as any).user.id;
+  const { entityId, entityType } = req.body;
+
+  const existingLike = await prisma.dislike.findFirst({
+    where: {
+      AND: [
+        { userId },
+        {
+          OR: [
+            { threadId: entityType === 'Thread' ? entityId : null },
+            { messageId: entityType === 'Message' ? entityId : null },
+            { commentId: entityType === 'Comment' ? entityId : null },
+          ],
+        },
+      ],
+    },
+  });
+
+  if (existingLike) {
+    await prisma.dislike.delete({ where: { id: existingLike.id } });
+  } else {
+    await prisma.dislike.create({
+      data: {
+        userId,
+        threadId: entityType === 'Thread' ? entityId : null,
+        messageId: entityType === 'Message' ? entityId : null,
+        commentId: entityType === 'Comment' ? entityId : null,
+      },
+    });
+
+    if (entityType === 'Thread') {
+      await prisma.like.deleteMany({
+        where: { userId, threadId: entityId },
+      });
+    } else if (entityType === 'Message') {
+      await prisma.like.deleteMany({
+        where: { userId, messageId: entityId },
+      });
+    } else if (entityType === 'Comment') {
+      await prisma.like.deleteMany({
+        where: { userId, commentId: entityId },
+      });
+    }
+  }
+
+  res.json({ success: true });
 };

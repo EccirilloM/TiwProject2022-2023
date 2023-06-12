@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -30,4 +30,14 @@ export class UserService {
     return this.http.post(`${this.backEndUrl}/api/user/updatePhoto`, formData, { headers });
   }
 
+  isFollowing(username: string): Observable<boolean> {
+    const currentUsername = this.authService.getUsername();
+  
+    return this.http.get<any[]>(`${this.backEndUrl}/api/user/${currentUsername}/following`, {
+      headers: this.authService.getHttpHeaders(),
+    }).pipe(
+      map((following: any[]) => following.some((user: any) => user.username === username))
+    );
+  }
+  
 }
