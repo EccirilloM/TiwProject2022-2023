@@ -22,22 +22,24 @@ export class ConfirmChangeImageComponent implements OnInit {
     this.fileInput.nativeElement.click();
   }
   
+  onCancel() {
+    this.router.navigate(['/profile', this.username]);
+  }
+  
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
-      this.userService.updatePhoto(this.username, file).subscribe(response => {
-        // Se arriva qui, la risposta è stata di successo (status HTTP 2xx)
-        this.router.navigate(['/profile']);
-      }, error => {
-        // Se arriva qui, c'è stato un errore (status HTTP 4xx o 5xx)
-        console.error('Error during image upload:', error);
+      this.userService.updatePhoto(this.username, file).subscribe({
+        next: (response) => {
+          // Se arriva qui, la risposta è stata di successo (status HTTP 2xx)
+          this.router.navigate(['/profile', this.username]);
+        },
+        error: (error) => {
+          // Se arriva qui, c'è stato un errore (status HTTP 4xx o 5xx)
+          console.error('Error during image upload:', error);
+        }
       });
     }
-  }
-  
-
-  onCancel() {
-    this.router.navigate(['/profile']);
   }
 }
 
