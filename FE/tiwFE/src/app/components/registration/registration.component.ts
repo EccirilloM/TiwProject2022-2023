@@ -18,7 +18,9 @@ export class RegistrationComponent implements OnInit {
 
   constructor(private authService: AuthService, private router: Router ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log("OnInit Registration");
+  }
 
   registerPerson() {
     this.errorMessage = '';
@@ -52,7 +54,7 @@ export class RegistrationComponent implements OnInit {
     };
       
     this.authService.registration(newPerson).subscribe({
-      next: (data: any) => {
+      next: (response) => {
         this.successMessage = 'Registration successful!';
         this.errorMessage = '';
         this.username = '';

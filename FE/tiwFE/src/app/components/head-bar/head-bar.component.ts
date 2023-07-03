@@ -11,9 +11,11 @@ import { AuthService } from 'src/app/services/auth.service';
 export class HeadbarComponent implements OnInit {
   currentRoute: string = '';
   title: string = "ALIAS TWITTER";
+  username: string = "";
 
   constructor(private router: Router, private authService: AuthService) {
     this.currentRoute = this.router.url.split('/')[1];
+    this.username = this.authService.getUsername(); 
   }
 
   ngOnInit(): void {

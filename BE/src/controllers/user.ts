@@ -6,6 +6,8 @@ const prisma = new PrismaClient();
 
 export const getUser = async (req, res) => {
   try {
+    const {username} = req.params;
+
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -16,7 +18,7 @@ export const getUser = async (req, res) => {
       
       const user = await prisma.user.findUnique({
         where: {
-          id: decodedToken.id,
+          username: username,
         },
         select: {
           id: true,
@@ -238,7 +240,7 @@ export const isFollowing = async (req, res) => {
   }
 };
 
-export const getAllUsers = async (req, res) => {
+export const getUsers = async (req, res) => {
 };
 
 export const like = async (req, res) => {

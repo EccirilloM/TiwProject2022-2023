@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router'; // Importa Router
 import { AuthService } from "src/app/services/auth.service";
 
@@ -7,16 +7,22 @@ import { AuthService } from "src/app/services/auth.service";
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   username: string = '';
   password: string = '';
   successMessage: string = '';
   errorMessage: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
+  
+  ngOnInit(): void {
+    console.log("OnInit Login")
+  }
 
   login() {
-    if (!this.username || !this.password) {
+    const username = this.username.trim();
+
+    if (!username || !this.password) {
       this.errorMessage = 'Please enter your username and password';
       return;
     }

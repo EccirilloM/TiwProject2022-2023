@@ -24,7 +24,7 @@ const routes: Routes = [
     path: "search", component: SearchComponent
   },
   {
-    path: "profile", component: ProfileComponent
+    path: "profile/:username", component: ProfileComponent
   },
   {
     path: "confirmChangeImageProfile", component: ConfirmChangeImageComponent

@@ -27,7 +27,7 @@ model User {
 
 model Thread {
   id         Int       @id @default(autoincrement())
-  title      String
+  title      String    @db.VarChar(20)
   createdAt  DateTime  @default(now())
   userId     Int
   user       User      @relation(fields: [userId], references: [id])
@@ -38,7 +38,7 @@ model Thread {
 
 model Message {
   id         Int      @id @default(autoincrement())
-  text       String
+  text       String   @db.VarChar(100)
   createdAt  DateTime @default(now())
   image      String?  // Opzionale, può essere NULL
   userId     Int
@@ -52,7 +52,7 @@ model Message {
 
 model Comment {
   id       Int      @id @default(autoincrement())
-  text     String
+  text     String   @db.VarChar(150)
   userId   Int
   user     User     @relation(fields: [userId], references: [id])
   likes    Like[]

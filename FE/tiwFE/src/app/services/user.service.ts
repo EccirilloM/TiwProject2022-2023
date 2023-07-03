@@ -12,11 +12,11 @@ export class UserService {
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
-  getUser(): Observable<any> {
-    return this.http.get<any>(`${this.backEndUrl}/api/user/getUser`, {
+  getUser(username: string): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/user/getUser/${username}`, {
       headers: this.authService.getHttpHeaders(),
     });
-  }
+  }  
 
   updatePhoto(username: string, image: File): Observable<any> {
     const formData = new FormData();

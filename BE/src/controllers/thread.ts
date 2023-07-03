@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getAllThreadsFollowingAndPropriate = async (req, res) => {
+export const getTenThreadsFollowingAndPropriate = async (req, res) => {
     try {
       const userId = req.user.id; // l'id dell'utente corrente
   

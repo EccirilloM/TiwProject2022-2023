@@ -13,7 +13,7 @@
         search
       </span>
     </button>
-    <button routerLink="/profile" [ngClass]="{'bg-blue-800': currentRoute === 'profile'}" class="bg-blue-500 text-white material-icons p-2 rounded transition-colors duration-300 ease-in-out">
+    <button routerLink="/profile/{{username}}" [ngClass]="{'bg-blue-800': currentRoute === 'profile'}" class="bg-blue-500 text-white material-icons p-2 rounded transition-colors duration-300 ease-in-out">
       <span class="material-icons">
         account_circle
       </span>
