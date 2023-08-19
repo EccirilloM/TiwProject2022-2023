@@ -94,6 +94,10 @@ export class SearchComponent implements OnInit {
     this.router.navigate(['/profile', username]);
   }
 
+  navigateToThread(): void{
+    
+  }
+
   ngOnInit(): void {
     console.log("OnInit SeachComponent");
     this.getRandomResults();

@@ -23,7 +23,7 @@
   </div>
 </section>
 
-<main class="antialiased font-sans bg-gray-200">
+<main class="antialiasedù font-sans bg-gray-200">
   <div class="container mx-auto px-4 sm:px-8">
     <div class="py-8">
       <div>
@@ -55,8 +55,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let user of results" class="hover:bg-gray-400 cursor-pointer" (click)="navigateToProfile(user.username)">
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm ">
+              <tr *ngFor="let user of results" class=" cursor-pointer bg-white hover:bg-gray-400" (click)="navigateToProfile(user.username)">
+                <td class="px-5 py-5 border-b border-gray-200 text-sm ">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 w-10 h-10">
                       <img class="w-full h-full rounded-full" [src]="user.profileImageUrl"/>
@@ -68,13 +68,13 @@
                     </div>
                   </div>
                 </td>
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <td class="px-5 py-5 border-b border-gray-200 text-sm">
                   <p class="text-gray-900 whitespace-no-wrap">{{user.followingCount}}</p>
                 </td>
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <td class="px-5 py-5 border-b border-gray-200 text-sm">
                   <p class="text-gray-900 whitespace-no-wrap">{{user.followersCount}}</p>
                 </td>
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <td class="px-5 py-5 border-b border-gray-200 text-sm">
                   <span class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                     <span aria-hidden class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
                     <span class="relative">{{user.threadsCount}}</span>
@@ -112,17 +112,17 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let thread of results">
-                  <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <tr *ngFor="let thread of results" class="bg-white hover:bg-gray-400" (click)="navigateToThread()">
+                  <td class="px-5 py-5 border-b border-gray-200 text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">{{thread.title}}</p>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <td class="px-5 py-5 border-b border-gray-200 text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">{{thread.createdAt}}</p>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <td class="px-5 py-5 border-b border-gray-200 text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">{{thread.likesCount}}</p>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <td class="px-5 py-5 border-b border-gray-200 text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">{{thread.dislikesCount}}</p>
                   </td>
                 </tr>
