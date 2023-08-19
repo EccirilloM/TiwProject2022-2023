@@ -20,4 +20,16 @@ export class ThreadService {
       headers: this.authService.getHttpHeaders()
     });
   }
+
+  searchThreads(searchTerm: string): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/search/thread?term=${searchTerm}`, {
+        headers: this.authService.getHttpHeaders()
+    });
+  }
+
+  getTenRandomThreads(): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/search/randomThreads`, {
+        headers: this.authService.getHttpHeaders()
+    });
+  }
 }

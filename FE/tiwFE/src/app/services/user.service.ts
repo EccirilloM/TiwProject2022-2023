@@ -39,5 +39,26 @@ export class UserService {
       map((following: any[]) => following.some((user: any) => user.username === username))
     );
   }
+
+  getAllUsers(): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/user/getAllUsers`, {
+      headers: this.authService.getHttpHeaders(),
+    });
+  }
+
+  searchUsers(searchTerm: string): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/search/user?term=${searchTerm}`, {
+      headers: this.authService.getHttpHeaders()
+    });
+  }
+
+  getTenRandomUsers(): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/search/randomUsers`, {
+        headers: this.authService.getHttpHeaders()
+    });
+  }
+
+
   
+
 }

@@ -4,6 +4,7 @@ import path from 'path';
 import {router as authRoute} from "./routes/auth"
 import {router as userRoute} from "./routes/user"
 import{router as threadRoute} from "./routes/thread"
+import {router as searchRoute} from "./routes/search"
 //IMPORT ROUTES
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/profilePictures', express.static(path.join(__dirname, 'profilePictures
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/thread", threadRoute);
+app.use("/api/search", searchRoute);
 
 app.listen(port, () => {
     return console.log(`Express is listening at http://localhost:${port}`);
