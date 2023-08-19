@@ -1,7 +1,7 @@
 <section class="mt-16">
   <div class="pt-2 relative mx-auto text-gray-600 flex items-center justify-center">
     <input class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none" type="search"
-      name="search" [placeholder]="isUserSearchEnabled ? 'Search User' : 'Search Thread'" (input)="search()"
+      name="search" [placeholder]="searchType === 'user' ? 'Search User' : 'Search Thread'" (input)="search()"
       [(ngModel)]="searchTerm">
     <button (click)="refresh()" type="reset"
       class="ml-2 bg-red-500 hover:bg-red-700 text-white h-10 flex items-center justify-center px-4 rounded">
@@ -9,9 +9,9 @@
         restart_alt
       </span>
     </button>
-    <button (click)="toggleUserThreadSearch()"
+    <button (click)="toggleSearchType()"
       class="ml-2 bg-green-500 hover:bg-green-700 text-white h-10 flex items-center justify-center px-4 rounded">
-      <span class="text-gray-200 fill-current material-icons" *ngIf="isUserSearchEnabled; else threadIcon">
+      <span class="text-gray-200 fill-current material-icons" *ngIf="searchType === 'user'; else threadIcon">
         people
       </span>
       <ng-template #threadIcon>
@@ -27,11 +27,11 @@
   <div class="container mx-auto px-4 sm:px-8">
     <div class="py-8">
       <div>
-        <h2 class="text-2xl font-semibold leading-tight">{{isUserSearchEnabled ? 'Users' : 'Threads'}}</h2>
+        <h2 class="text-2xl font-semibold leading-tight">{{searchType === 'user' ? 'Users' : 'Threads'}}</h2>
       </div>
 
       <!-- Tabella per la ricerca degli utenti -->
-      <div *ngIf="isUserSearchEnabled; else threadTable" class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+      <div *ngIf="searchType === 'user'; else threadTable" class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
         <div class="h-96 overflow-y-auto rounded-lg overflow-hidden">
           <table class="table-fixed w-full">
             <thead class="sticky top-0 z-10">
@@ -55,7 +55,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let user of users" class="hover:bg-gray-400 cursor-pointer" (click)="navigateToProfile(user.username)">
+              <tr *ngFor="let user of results" class="hover:bg-gray-400 cursor-pointer" (click)="navigateToProfile(user.username)">
                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm ">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 w-10 h-10">
@@ -89,56 +89,41 @@
       <!-- Tabella per la ricerca dei thread -->
       <ng-template #threadTable>
         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-          <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
-            <table class="min-w-full leading-normal">
-              <thead>
+          <div class="h-96 overflow-y-auto rounded-lg overflow-hidden">
+            <table class="table-fixed w-full">
+              <thead class="sticky top-0 z-10">
                 <tr>
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    class="w-1/5 px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Title
                   </th>
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    class="w-1/5 px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Created At
                   </th>
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    class="w-1/5 px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Like
                   </th>
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    class="w-1/5 px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Dislike
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr *ngFor="let thread of results">
                   <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <div class="flex items-center">
-                      <div class="flex-shrink-0 w-10 h-10">
-                        <img class="w-full h-full rounded-full"
-                          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                          alt="" />
-                      </div>
-                      <div class="ml-3">
-                        <p class="text-gray-900 whitespace-no-wrap">
-                          Vera Carpenter
-                        </p>
-                      </div>
-                    </div>
+                    <p class="text-gray-900 whitespace-no-wrap">{{thread.title}}</p>
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">Admin</p>
+                    <p class="text-gray-900 whitespace-no-wrap">{{thread.createdAt}}</p>
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">
-                      Jan 21, 2020
-                    </p>
+                    <p class="text-gray-900 whitespace-no-wrap">{{thread.likesCount}}</p>
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">
-                      30  
-                    </p>
+                    <p class="text-gray-900 whitespace-no-wrap">{{thread.dislikesCount}}</p>
                   </td>
                 </tr>
               </tbody>
