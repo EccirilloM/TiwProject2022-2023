@@ -10,6 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum EntityType {
+  THREAD
+  MESSAGE
+  COMMENT
+}
+
 model User {
   id           Int        @id @default(autoincrement())
   email        String     @unique
@@ -32,8 +38,6 @@ model Thread {
   userId     Int
   user       User      @relation(fields: [userId], references: [id])
   messages   Message[]
-  likes      Like[]
-  dislikes   Dislike[]
 }
 
 model Message {
@@ -43,8 +47,6 @@ model Message {
   image      String?  // Opzionale, può essere NULL
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
-  likes      Like[]
-  dislikes   Dislike[]
   comments   Comment[]
   threadId   Int
   thread     Thread   @relation(fields: [threadId], references: [id])
@@ -55,12 +57,9 @@ model Comment {
   text     String   @db.VarChar(150)
   userId   Int
   user     User     @relation(fields: [userId], references: [id])
-  likes    Like[]
-  dislikes Dislike[]
   messageId Int
   message   Message   @relation(fields: [messageId], references: [id])
 }
-
 
 model Follow {
   id          Int      @id @default(autoincrement())
@@ -68,29 +67,23 @@ model Follow {
   followerId  Int
   followed    User     @relation("FollowedBy", fields: [followedId], references: [id])
   follower    User     @relation("Follows", fields: [followerId], references: [id])
+
+  @@unique([followerId, followedId])
 }
 
 model Like {
-  id       Int     @id @default(autoincrement())
-  userId   Int
-  user     User    @relation(fields: [userId], references: [id])
-  messageId   Int?
-  message     Message?   @relation(fields: [messageId], references: [id])
-  commentId Int?
-  comment  Comment? @relation(fields: [commentId], references: [id])
-  threadId Int?
-  thread   Thread?  @relation(fields: [threadId], references: [id])
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  user       User       @relation(fields: [userId], references: [id])
+  entityType EntityType
+  entityId   Int
 }
 
 model Dislike {
-  id        Int     @id @default(autoincrement())
-  userId    Int
-  user      User    @relation(fields: [userId], references: [id])
-  messageId    Int?
-  message      Message?   @relation(fields: [messageId], references: [id])
-  commentId Int?
-  comment   Comment? @relation(fields: [commentId], references: [id])
-  threadId  Int?
-  thread    Thread?  @relation(fields: [threadId], references: [id])
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  user       User       @relation(fields: [userId], references: [id])
+  entityType EntityType
+  entityId   Int
 }
 

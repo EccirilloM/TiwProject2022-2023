@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
+import { AuthRequest } from '../controllers/types';
 
 const prisma = new PrismaClient();
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.header('Authorization');
 
   if (!authHeader) {
@@ -14,7 +15,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: number};
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: number };
 
     const user = await prisma.user.findUnique({
       where: {
@@ -30,4 +31,18 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   } catch (error) {
     res.status(400).json({ message: 'Token is not valid' });
   }
+};
+
+// Middleware per verificare se l'utente è il proprietario del thread
+export const isThreadOwner = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  const threadId = parseInt(req.params.threadId, 10);
+  const userId = req.user.id;
+
+  const thread = await prisma.thread.findUnique({ where: { id: threadId } });
+
+  if (!thread || thread.userId !== userId) {
+    return res.status(403).json({ message: 'You are not authorized to modify this thread' });
+  }
+  
+  next();
 };

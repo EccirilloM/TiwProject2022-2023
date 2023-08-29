@@ -5,6 +5,6 @@ import { authMiddleware} from '../middleware/auth.middleware';
 const router = express.Router();
 router.use(express.json());
 
-router.get('/following', authMiddleware, threadController.getTenThreadsFollowingAndPropriate);
+router.get('/getTenThreadsFollowingAndPropriate', [authMiddleware], threadController.getTenThreadsFollowingAndPropriate);
 
 export {router};

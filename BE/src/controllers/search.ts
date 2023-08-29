@@ -1,25 +1,24 @@
 import { PrismaClient } from '@prisma/client';
+import { AuthRequest } from './types';
+import { Request, Response } from 'express';
 
 const prisma = new PrismaClient();
 
-export const getTenRandomThreads = async (req, res) => {
-  try {
-      // Ottieni tutti gli ID dei thread
+export const getTenRandomThreads = async (req: AuthRequest, res: Response) => {
+    try {
       const allThreadIds = await prisma.thread.findMany({
           select: {
               id: true
           }
       });
-
-      // Seleziona 10 ID a caso
+  
       const randomIds = [];
       for (let i = 0; i < 10; i++) {
           const randomIndex = Math.floor(Math.random() * allThreadIds.length);
           randomIds.push(allThreadIds[randomIndex].id);
-          allThreadIds.splice(randomIndex, 1); // Rimuovi l'ID selezionato per evitare duplicati
+          allThreadIds.splice(randomIndex, 1);
       }
-
-      // Ottieni i dettagli completi per gli ID casuali selezionati
+  
       const randomThreads = await prisma.thread.findMany({
           where: {
               id: {
@@ -36,20 +35,92 @@ export const getTenRandomThreads = async (req, res) => {
                       username: true
                   }
               },
-              messages: true,
-              likes: true,
-              dislikes: true
+              messages: true
           }
       });
-
+  
+      for (let thread of randomThreads) {
+          const likesCount = await prisma.like.count({
+              where: {
+                  entityType: "THREAD",
+                  entityId: thread.id
+              }
+          });
+  
+          const dislikesCount = await prisma.dislike.count({
+              where: {
+                  entityType: "THREAD",
+                  entityId: thread.id
+              }
+          });
+  
+          thread["likesCount"] = likesCount;
+          thread["dislikesCount"] = dislikesCount;
+      }
+  
       res.json(randomThreads);
-  } catch (error) {
+    } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
-  }
-};
+    }
+  };
+  
+  export const searchThread = async (req: AuthRequest, res: Response) => {
+    try {
+      const searchTerm = req.query.term;
+  
+      if (typeof searchTerm !== 'string') {
+        return res.status(400).json({ message: "Invalid search term" });
+      }
+  
+      const threads = await prisma.thread.findMany({
+          where: {
+              title: {
+                  contains: searchTerm
+              }
+          },
+          select: {
+              id: true,
+              title: true,
+              createdAt: true,
+              userId: true,
+              user: {
+                  select: {
+                      username: true
+                  }
+              },
+              messages: true
+          }
+      });
+  
+      for (let thread of threads) {
+          const likesCount = await prisma.like.count({
+              where: {
+                  entityType: "THREAD",
+                  entityId: thread.id
+              }
+          });
+  
+          const dislikesCount = await prisma.dislike.count({
+              where: {
+                  entityType: "THREAD",
+                  entityId: thread.id
+              }
+          });
+  
+          thread["likesCount"] = likesCount;
+          thread["dislikesCount"] = dislikesCount;
+      }
+  
+      res.json(threads);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
 
-export const getTenRandomUsers = async (req, res) => {
+export const getTenRandomUsers = async (req: AuthRequest, res: Response) => {
   try {
       // Ottieni tutti gli ID degli utenti
       const allUserIds = await prisma.user.findMany({
@@ -91,11 +162,13 @@ export const getTenRandomUsers = async (req, res) => {
   }
 };
   
-
-// user.controller.ts
-export const searchUsers = async (req, res) => {
+export const searchUsers = async (req: AuthRequest, res: Response) => {
   try {
     const searchTerm = req.query.term;
+
+    if (typeof searchTerm !== 'string') {
+        return res.status(400).json({ message: "Invalid search term" });
+    }
 
     const users = await prisma.user.findMany({
       where: {
@@ -118,38 +191,5 @@ export const searchUsers = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-export const searchThread = async (req, res) => {
-  try {
-      const searchTerm = req.query.term;
-
-      const threads = await prisma.thread.findMany({
-          where: {
-              title: {
-                  contains: searchTerm
-              }
-          },
-          select: {
-              id: true,
-              title: true,
-              createdAt: true,
-              userId: true,
-              user: {
-                  select: {
-                      username: true
-                  }
-              },
-              messages: true,
-              likes: true,
-              dislikes: true
-          }
-      });
-
-      res.json(threads);
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
   }
 };

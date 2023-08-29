@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
+import { AuthRequest } from './types';
 
 const prisma = new PrismaClient();
 
-export const getUser = async (req, res) => {
+export const getUser = async (req: AuthRequest, res: Response) => {
   try {
     const {username} = req.params;
 
@@ -62,17 +63,15 @@ export const getUser = async (req, res) => {
           likes: {
             select: {
               id: true,
-              messageId: true,
-              commentId: true,
-              threadId: true
+              entityType: true,  // Aggiunto questo
+              entityId: true     // Aggiunto questo
             },
           },
           dislikes: {
             select: {
               id: true,
-              messageId: true,
-              commentId: true,
-              threadId: true
+              entityType: true,  // Aggiunto questo
+              entityId: true     // Aggiunto questo
             },
           },
           
@@ -88,7 +87,7 @@ export const getUser = async (req, res) => {
   }
 };
 
-export const updatePhoto = async (req: Request, res: Response) => {
+export const updatePhoto = async (req: AuthRequest, res: Response) => {
   if (!req.file) {
       res.status(400).send('No file uploaded.');
       return;
@@ -113,15 +112,33 @@ export const updatePhoto = async (req: Request, res: Response) => {
   }
 };
 
-export const follow = async (req, res) => {
+export const follow = async (req: AuthRequest, res: Response) => {
   try {
-    const followerId = (req as any).user.id; // l'id dell'utente che sta facendo la richiesta
-    const followedId = Number(req.params.id); // l'id dell'utente da seguire è passato come parametro dell'URL
+    const followerId = (req as any).user.id;
+    const { followedId } = req.body; 
+
+    if (followerId === followedId) {
+      return res.status(400).json({ message: "You cannot follow yourself" });
+    }
 
     // Verifica se l'utente esiste
     const followedUser = await prisma.user.findUnique({ where: { id: followedId } });
     if (!followedUser) {
       return res.status(404).json({ message: "User to follow not found" });
+    }
+
+    // Verifica se l'utente sta già seguendo l'altro utente
+    const existingFollow = await prisma.follow.findUnique({
+      where: {
+        followerId_followedId: {
+          followerId: followerId,
+          followedId: followedId,
+        },
+      },
+    });
+
+    if (existingFollow) {
+      return res.status(400).json({ message: "You're already following this user" });
     }
 
     // Crea il record Follow
@@ -139,10 +156,14 @@ export const follow = async (req, res) => {
   }
 };
 
-export const unfollow = async (req, res) => {
+export const unfollow = async (req: AuthRequest, res: Response) => {
   try {
-    const followerId = (req as any).user.id; // l'id dell'utente che sta facendo la richiesta
-    const followedId = Number(req.params.id); // l'id dell'utente da non seguire più è passato come parametro dell'URL
+    const followerId = req.user.id; 
+    const { followedId } = req.body;
+
+    if (followerId === followedId) {
+      return res.status(400).json({ message: "You cannot unfollow yourself" });
+    }
 
     // Verifica se l'utente esiste
     const followedUser = await prisma.user.findUnique({ where: { id: followedId } });
@@ -163,124 +184,199 @@ export const unfollow = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
+ 
 };
 
-export const isFollowing = async (req, res) => {
+export const isFollowing = async (req: AuthRequest, res: Response) => {
   try {
     const username = req.params.username;
-    const user = await prisma.user.findUnique({
+    const loggedUserId = (req as any).user.id;  // l'id dell'utente loggato
+
+    // Trova l'utente basato sullo username
+    const userToCheck = await prisma.user.findUnique({
       where: { username },
-      select: { following: true }
     });
 
-    if (!user) {
+    if (!userToCheck) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.json(user.following);
+    // Verifica se l'utente loggato segue l'utente cercato
+    const following = await prisma.follow.findUnique({
+      where: {
+        followerId_followedId: {
+          followedId: userToCheck.id,
+          followerId: loggedUserId
+        },
+      },
+    });
+
+    // Se 'following' esiste, allora l'utente loggato segue l'utente cercato
+    return res.json({ isFollowing: Boolean(following) });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req: AuthRequest, res: Response) => {
 };
 
-export const like = async (req, res) => {
-  const userId = (req as any).user.id;
+export const handleLike = async (req: AuthRequest, res: Response) => {
   const { entityId, entityType } = req.body;
+  const userId = req.user.id;
 
-  const existingLike = await prisma.like.findFirst({
-    where: {
-      AND: [
-        { userId },
-        {
-          OR: [
-            { threadId: entityType === 'Thread' ? entityId : null },
-            { messageId: entityType === 'Message' ? entityId : null },
-            { commentId: entityType === 'Comment' ? entityId : null },
-          ],
-        },
-      ],
-    },
-  });
+  // Mapping per identificare la chiave appropriata basata su entityType
+  const entityMapping = {
+    thread: "threadId",
+    comment: "commentId",
+    message: "messageId"
+  };
 
-  if (existingLike) {
-    await prisma.like.delete({ where: { id: existingLike.id } });
-  } else {
-    await prisma.like.create({
-      data: {
-        userId,
-        threadId: entityType === 'Thread' ? entityId : null,
-        messageId: entityType === 'Message' ? entityId : null,
-        commentId: entityType === 'Comment' ? entityId : null,
-      },
-    });
+  const column = entityMapping[entityType];
 
-    if (entityType === 'Thread') {
-      await prisma.dislike.deleteMany({
-        where: { userId, threadId: entityId },
-      });
-    } else if (entityType === 'Message') {
-      await prisma.dislike.deleteMany({
-        where: { userId, messageId: entityId },
-      });
-    } else if (entityType === 'Comment') {
-      await prisma.dislike.deleteMany({
-        where: { userId, commentId: entityId },
-      });
-    }
+  if (!column) {
+    return res.status(400).json({ message: "Invalid entity type" });
   }
 
-  res.json({ success: true });
+  try {
+    // Cerca un like esistente
+    const existingLike = await prisma.like.findFirst({
+      where: {
+        userId: userId,
+        [column]: entityId
+      }
+    });
+
+    if (existingLike) {
+      // Se esiste, elimina il like (toggle like)
+      await prisma.like.delete({ where: { id: existingLike.id } });
+      return res.json({ message: "Like removed" });
+    } else {
+      // Se non esiste, crea un nuovo like
+      await prisma.like.create({
+        data: {
+          userId: userId,
+          entityType: entityType,  // Usiamo entityType
+          entityId: entityId  // e entityId
+        }
+      });
+      return res.json({ message: "Like added" });
+    }
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-export const dislike = async (req, res) => {
-  const userId = (req as any).user.id;
+export const handleDislike = async (req: AuthRequest, res: Response) => {
   const { entityId, entityType } = req.body;
+  const userId = req.user.id;
 
-  const existingLike = await prisma.dislike.findFirst({
-    where: {
-      AND: [
-        { userId },
-        {
-          OR: [
-            { threadId: entityType === 'Thread' ? entityId : null },
-            { messageId: entityType === 'Message' ? entityId : null },
-            { commentId: entityType === 'Comment' ? entityId : null },
-          ],
-        },
-      ],
-    },
-  });
+  // Mapping per identificare la chiave appropriata basata su entityType
+  const entityMapping = {
+    thread: "threadId",
+    comment: "commentId",
+    message: "messageId"
+  };
 
-  if (existingLike) {
-    await prisma.dislike.delete({ where: { id: existingLike.id } });
-  } else {
-    await prisma.dislike.create({
-      data: {
-        userId,
-        threadId: entityType === 'Thread' ? entityId : null,
-        messageId: entityType === 'Message' ? entityId : null,
-        commentId: entityType === 'Comment' ? entityId : null,
-      },
-    });
+  const column = entityMapping[entityType];
 
-    if (entityType === 'Thread') {
-      await prisma.like.deleteMany({
-        where: { userId, threadId: entityId },
-      });
-    } else if (entityType === 'Message') {
-      await prisma.like.deleteMany({
-        where: { userId, messageId: entityId },
-      });
-    } else if (entityType === 'Comment') {
-      await prisma.like.deleteMany({
-        where: { userId, commentId: entityId },
-      });
-    }
+  if (!column) {
+    return res.status(400).json({ message: "Invalid entity type" });
   }
 
-  res.json({ success: true });
+  try {
+    // Cerca un dislike esistente
+    const existingDislike = await prisma.dislike.findFirst({
+      where: {
+        userId: userId,
+        [column]: entityId
+      }
+    });
+
+    if (existingDislike) {
+      // Se esiste, elimina il dislike (toggle dislike)
+      await prisma.dislike.delete({ where: { id: existingDislike.id } });
+      return res.json({ message: "Dislike removed" });
+    } else {
+      // Se non esiste, crea un nuovo dislike
+      await prisma.dislike.create({
+        data: {
+          userId: userId,
+          entityType: entityType,  // Usiamo entityType
+          entityId: entityId  // e entityId
+        }
+      });
+      return res.json({ message: "Dislike added" });
+    }
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Metodo per creare un Thread
+export const createThread = async (req: AuthRequest, res: Response) => {
+  const { title } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const newThread = await prisma.thread.create({
+      data: {
+        title,
+        userId
+      }
+    });
+    return res.status(201).json(newThread);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Metodo per creare un Message (con middleware isThreadOwner)
+export const createMessage = async (req: AuthRequest, res: Response) => {
+  const { text, image } = req.body;
+  const threadId = parseInt(req.params.threadId);
+  const userId = req.user.id;
+
+  try {
+    const newMessage = await prisma.message.create({
+      data: {
+        text,
+        image,
+        userId,
+        threadId
+      }
+    });
+    return res.status(201).json(newMessage);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Metodo per creare un Comment
+export const createComment = async (req: AuthRequest, res: Response) => {
+  const { text } = req.body;
+  const messageId = parseInt(req.params.messageId);
+  const userId = req.user.id;
+
+  try {
+    const newComment = await prisma.comment.create({
+      data: {
+        text,
+        userId,
+        messageId
+      }
+    });
+    return res.status(201).json(newComment);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
