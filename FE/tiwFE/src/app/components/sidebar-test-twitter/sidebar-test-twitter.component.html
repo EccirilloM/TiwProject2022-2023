@@ -1,0 +1,77 @@
+<!-- SIDE BAR -->
+<!-- HAI LEVATO h-auto, forse ti servirà in futuro -->
+<header class="text-white h-12 py-4">
+  <!-- Navbar (left side) -->
+  <div class="w-full overflow-y-auto h-screen pr-3">
+    <div class="overflow-y-auto h-screen pr-3">
+      <!--Logo-->
+      <span class="material-icons">
+        connect_without_contact
+        </span>
+
+      <!-- Nav-->
+      <nav class="mt-5 px-2">
+        <button [routerLink]="['/home']"
+          [ngClass]="{ 'bg-gray-800 text-blue-300': currentRoute === 'home', 'bg-gray-700 text-gray-400': currentRoute !== 'home' }"
+          class=" w-full group flex items-center px-2 py-2 text-base leading-6 font-semibold rounded-full hover:bg-gray-800 hover:text-blue-300">
+          <span class="material-icons">
+            home
+          </span>
+          Home
+        </button>
+        <!-- <button [routerLink]="['/explore']"
+          [ngClass]="{ 'bg-gray-800 text-blue-300': currentRoute === 'explore', 'bg-gray-700 text-gray-400': currentRoute !== 'explore' }"
+          class="w-full mt-1 group flex items-center px-2 py-2 text-base leading-6 font-semibold rounded-full hover:bg-gray-800 hover:text-blue-300">
+          <span class="material-icons">
+            search
+          </span>
+          Explore
+        </button> -->
+        <button [routerLink]="['/profile', username]"
+          [ngClass]="{ 'bg-gray-800 text-blue-300': currentRoute === 'profile', 'bg-gray-700 text-gray-400': currentRoute !== 'profile' }"
+          class="w-full mt-1 group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-full hover:bg-gray-800 hover:text-blue-300">
+          <span class="material-icons">
+            account_circle
+          </span>
+          Profile
+        </button>
+        <button (click)="logout()"
+          [ngClass]="{ 'bg-gray-800 text-blue-300': currentRoute === 'logout', 'bg-gray-700 text-gray-400': currentRoute !== 'logout' }"
+          class="w-full mt-1 group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-full hover:bg-gray-800 hover:text-blue-300">
+          <span class="material-icons">
+            logout
+          </span>
+          Logout
+        </button>
+        <!-- Bottone da conservare -->
+        <!-- <button class="bg-blue-400 hover:bg-blue-500 w-full mt-5 text-white font-bold py-2 px-4 rounded-full">
+      Tweet
+    </button> -->
+      </nav>
+
+
+
+      <!-- Informazioni in basso a sinistra dell'utente -->
+      <div class="absolute" style="bottom: 2rem;" (click)="goToProfileUserLogged()">
+        <div class="flex-shrink-0 flex hover:bg-gray-700 rounded-full px-4 py-3 mt-12 mr-2">
+          <a class="flex-shrink-0 group block">
+            <div class="flex items-center">
+              <div>
+                <img class="inline-block h-10 w-10 rounded-full" [src]="user.profileImage" alt="">
+              </div>
+              <div class="ml-3">
+                <p class="text-base leading-6 font-medium text-white">
+                  {{ user.name }} {{user.surname}}
+                </p>
+                <p
+                  class="text-sm leading-5 font-medium text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-150">
+                  @{{ user.username }}
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

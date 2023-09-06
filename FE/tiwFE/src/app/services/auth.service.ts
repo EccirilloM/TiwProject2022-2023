@@ -39,13 +39,10 @@ export class AuthService {
 
   login(credentials: { username: string; password: string }): Observable<any> {
     const headers = this.getHttpHeaders();
-    console.log('Headers:', headers); // You can remove this log if not needed
-  
     return this.http
       .post<any>(`${this.backEndUrl}/api/auth/login`, credentials)
       .pipe(
         tap((response) => {
-          console.log('login response:', response); // You can remove this log if not needed
           localStorage.setItem('token', response.token);
           localStorage.setItem("username", response.username);
           this.setIsAuthenticated(true);
@@ -68,7 +65,7 @@ export class AuthService {
     return localStorage.getItem('token') ?? '';
   }
 
-  getUsername(): string {
+  getUsernameLogged(): string {
     return localStorage.getItem('username') ?? '';
   }
 }

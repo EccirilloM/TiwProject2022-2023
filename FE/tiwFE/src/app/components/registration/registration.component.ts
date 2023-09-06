@@ -12,6 +12,9 @@ export class RegistrationComponent implements OnInit {
   password: string = '';
   ripetiPassword: string= '';
   email: string= '';
+  name: string= '';
+  surname: string= '';
+  description: string= '';
   status: string = '';
   successMessage: string = '';
   errorMessage: string = '';
@@ -51,6 +54,9 @@ export class RegistrationComponent implements OnInit {
       username: this.username.trim(),
       password: this.password,
       email: this.email.trim(),
+      name: this.name.trim(),
+      surname: this.surname.trim(),
+      description: this.description ? this.description.trim() : null,
     };
       
     this.authService.registration(newPerson).subscribe({
@@ -60,14 +66,18 @@ export class RegistrationComponent implements OnInit {
         this.username = '';
         this.password = '';
         this.email = '';
+        this.name='';
+        this.surname='';
+        this.description='';
         this.ripetiPassword = '';
 
         // this.router.navigate(['/login']);
       },
       error: (error) => {
+        console.log(error);
         this.errorMessage = 'Registration failed. Please try again.';
         this.successMessage = '';
-      }
+      } 
     });
   }
   

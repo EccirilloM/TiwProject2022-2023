@@ -1,0 +1,160 @@
+<main role="main">
+  <div class="flex w-full">
+    <section class="w-full border border-y-0 border-gray-800">
+      <!--Content (Center)-->
+      <!-- Nav back-->
+      <!-- BOTTONE PER TORNARE INDIETRO -->
+      <div>
+        <div class="flex justify-start">
+          <div class="px-4 py-2 mx-2">
+            <button [routerLink]="['/home']"
+              class="text-2xl font-medium rounded-full text-blue-400 hover:bg-gray-800 hover:text-blue-300 float-right">
+              <span class="material-icons">
+                arrow_back
+              </span>
+            </button>
+          </div>
+          <div class="mx-2">
+            <!-- Username -->
+            <h2 class="mb-0 text-xl font-bold text-white">{{ user.username }}</h2>
+            <!-- NUMBER OF threads -->
+            <p class="mb-0 w-48 text-xs text-gray-400">{{ user.threadsCount }} Threads</p>
+          </div>
+        </div>
+
+        <hr class="border-gray-800">
+
+      </div>
+      <!-- FINE BOTTONE PER TORNARE INDIETRO -->
+
+      <!-- User card-->
+      <div>
+        <!-- IMMAGINE DI BACKGROUND -->
+        <div class="w-full h-[200px] bg-center bg-no-repeat bg-cover"
+          style="background-image: url('https://vojislavd.com/ta-template-demo/assets/img/profile-background.jpg');">
+          <img class="opacity-0 w-full h-full"
+            src="https://vojislavd.com/ta-template-demo/assets/img/profile-background.jpg" alt="">
+        </div>
+        <div class="p-4">
+          <div class="flex justify-between items-center">
+            <!-- IMMAGINE DEL PROFILO-->
+            <div class="-mt-20">
+              <img class="w-[9rem] h-[9rem] rounded-full border-4 border-gray-900" [src]="user.profileImage"
+                alt="User profile image" (click)="onProfileImageClick()">
+            </div>
+            <!-- Follow Button -->
+            <!-- <button *ngIf="currentUsername !== user.username" (click)="handleFollow(user)"
+              class="text-blue-500 border-blue-500 hover:border-blue-800 hover:text-blue-800 font-bold py-2 px-4 rounded-full focus:outline-none focus:ring">
+              {{ isFollowing ? 'UNFOLLOW' : 'FOLLOW' }}
+            </button> -->
+          </div>
+
+          <!-- Profile info -->
+          <div class="mt-3 space-y-1">
+            <!-- User basic -->
+            <div>
+              <h2 class="text-xl font-bold text-white">@{{ user.username }}</h2>
+              <p class="text-sm font-medium text-gray-600">{{ user.name }} {{user.surname}}</p>
+            </div>
+            <!-- Description and others -->
+            <div>
+              <p class="text-white leading-tight mb-2">{{ user.description }}</p>
+              <div class="flex text-gray-600 space-x-3">
+                <div class="flex items-center">
+                  <span class="material-icons">calendar_month</span>
+                  <span class="leading-5 ml-1">Joined {{ formattedJoinDate | date:'medium'}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 flex justify-start items-center divide-x divide-gray-800">
+              <div class="text-center pr-3">
+                <span class="font-bold text-white">{{ user.followingCount }}</span>
+                <span class="text-gray-600">Following</span>
+              </div>
+              <div class="text-center px-3">
+                <span class="font-bold text-white">{{ user.followersCount }}</span>
+                <span class="text-gray-600">Followers</span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-gray-800">
+        </div>
+      </div>
+
+      <!-- LISTA DEI THREAD -->
+      <ul class="list-none">
+        <li *ngFor="let thread of user?.threads">
+
+          <article class="hover:bg-gray-800 transition duration-350 ease-in-out" >
+            <div class="flex flex-shrink-0 p-4 pb-0" (click)="navigateToThread(thread.id)">
+              <a href="#" class="flex-shrink-0 group block">
+                <div class="flex items-center">
+                  <div>
+                    <!-- Immagine profilo -->
+                    <img class="inline-block h-10 w-10 rounded-full" [src]="user.profileImage" alt="">
+                  </div>
+                  <div class="ml-3">
+                    <!-- Nome e cognome del profilo -->
+                    <p class="text-base leading-6 font-medium text-white">
+                      {{ user.name }} {{ user.surname }}
+                      <!-- Username del profilo e data di creazione del thread-->
+                      <span
+                        class="text-sm leading-5 font-medium text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-150">
+                        @{{ user.username }} . {{ thread.createdAt | date:'medium' }}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Titolo del thread -->
+            <div class="pl-16">
+              <p class="text-base width-auto font-medium text-white flex-shrink">
+                {{ thread.title }}
+              </p>
+
+              <div class="flex items-center py-4">
+                <!-- Commenti -->
+                <!-- Hai levato text-grey-400 -->
+                <div
+                  class="flex-1 flex items-center text-white text-xs hover:text-blue-400 transition duration-350 ease-in-out"
+                  (click)="navigateToThread(thread.id)">
+                  <span class="material-icons">
+                    chat_bubble_outline
+                  </span>
+                  {{ user.commentsCount }}
+                </div>
+                <!-- Like -->
+                <div
+                  class="flex-1 flex items-center text-white text-xs transition duration-350 ease-in-out"
+                  [class.liked]="thread.likeStatus === 'like'" (click)="handleLike(thread.id)">
+                  <span class="material-icons">
+                    thumb_up
+                  </span>
+                  {{ thread.likeCount }}
+                </div>
+                <!-- Dislike -->
+                <div
+                  class="flex-1 flex items-center text-white text-xs transition duration-350 ease-in-out"
+                  [class.disliked]="thread.likeStatus === 'dislike'" (click)="handleDislike(thread.id)">
+                  <span class="material-icons">
+                    thumb_down
+                  </span>
+                  {{ thread.dislikeCount }}
+                </div>
+              </div>
+            </div>
+            <hr class="border-gray-800">
+          </article>
+        </li>
+      </ul>
+
+    </section>
+
+
+
+  </div>
+</main>

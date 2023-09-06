@@ -3,3 +3,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Nasconde la scrollbar in Firefox */
+.overflow-y-auto {
+  scrollbar-width: none;
+}
+
+/* Nasconde la scrollbar in Chrome, Safari */
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
+
+/* Nasconde la scrollbar in IE, Edge */
+.overflow-y-auto {
+  -ms-overflow-style: none;
+}

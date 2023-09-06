@@ -4,18 +4,27 @@
       </svg>
     </div>
     <div class="space-y-5">
-      <p class="text-black font-bold text-5xl flex flex-col items-center">
+      <p class="text-white font-bold text-5xl flex flex-col items-center">
         <span>Register a Person<br /></span>
       </p>
-      <p class="text-black text-lg flex flex-col items-center">Please provide the required information</p>
+      <p class="text-white text-lg flex flex-col items-center">Please provide the required information</p>
+      <div class="flex flex-row items-center justify-center">
+        <input type="text" placeholder="Name" class="p-4 focus:outline-none focus:ring-1 focus:ring-blue-300 w-3/4" [(ngModel)]="name" />
+      </div>
+      <div class="flex flex-row items-center justify-center">
+        <input type="text" placeholder="Surname" class="p-4 focus:outline-none focus:ring-1 focus:ring-blue-300 w-3/4" [(ngModel)]="surname" />
+      </div>
       <div class="flex flex-row items-center justify-center">
         <input type="text" placeholder="Username" class="p-4 focus:outline-none focus:ring-1 focus:ring-blue-300 w-3/4" [(ngModel)]="username" />
+      </div>
+      <div class="flex flex-row items-center justify-center">
+        <input type="text" placeholder="description" class="p-4 focus:outline-none focus:ring-1 focus:ring-blue-300 w-3/4" [(ngModel)]="description" />
       </div>
       <div class="flex flex-row items-center justify-center">
         <input type="text" placeholder="Email" class="p-4 focus:outline-none focus:ring-1 focus:ring-blue-300 w-3/4" [(ngModel)]="email" />
       </div>
       <div class="flex flex-row items-center justify-center">
-        <input type="password" placeholder="Password" class="p-4 focus:outline-none focus:ring-1 focus:ring-blue-300 w-3/4" [(ngModel)]="password" />
+        <input type="password" placeholder="Password (8 character minimum)" class="p-4 focus:outline-none focus:ring-1 focus:ring-blue-300 w-3/4" [(ngModel)]="password" />
       </div>
       <div class="flex flex-row items-center justify-center">
         <input type="password" placeholder="ripeti password" class="p-4 focus:outline-none focus:ring-1 focus:ring-blue-300 w-3/4" [(ngModel)]="ripetiPassword" />
@@ -23,7 +32,7 @@
       <div class="flex flex-row items-center justify-center">
         <button class="bg-indigo-600 px-4 py-2 rounded-md text-white font-semibold tracking-wide cursor-pointer" (click)="registerPerson()">Register</button>
       </div>
-      <p class="text-black text-lg flex flex-col items-center">If you're already register, click below to login</p>
+      <p class="text-white text-lg flex flex-col items-center">If you're already register, click below to login</p>
     <div class="flex flex-row items-center justify-center">
       <button class="bg-blue-600 px-4 py-2 rounded-md text-white font-semibold tracking-wide cursor-pointer" routerLink="/login">login</button>
     </div>

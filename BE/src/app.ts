@@ -18,6 +18,7 @@ app.use(cors(corsOptions));
 const port = 3000;
 app.use(express.json());
 app.use('/profilePictures', express.static(path.join(__dirname, 'profilePictures')));
+app.use('/messageImages', express.static(path.join(__dirname, 'messageImages')));
 
 //API
 app.use("/api/auth", authRoute);

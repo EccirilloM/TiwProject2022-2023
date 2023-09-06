@@ -21,6 +21,10 @@ model User {
   email        String     @unique
   username     String     @unique
   password     String
+  name         String     // Nome utente
+  surname      String     // Cognome utente
+  description  String?    @db.VarChar(200)
+  joinedAt     DateTime   @default(now())  // Data e ora di registrazione, impostato automaticamente al momento della creazione
   profileImage String?    // Opzionale, può essere NULL
   comments     Comment[]
   messages     Message[]
@@ -38,6 +42,8 @@ model Thread {
   userId     Int
   user       User      @relation(fields: [userId], references: [id])
   messages   Message[]
+  likeCount  Int       @default(0)
+  dislikeCount Int     @default(0)
 }
 
 model Message {
@@ -50,15 +56,20 @@ model Message {
   comments   Comment[]
   threadId   Int
   thread     Thread   @relation(fields: [threadId], references: [id])
+  likeCount  Int       @default(0)
+  dislikeCount Int     @default(0)
 }
 
 model Comment {
   id       Int      @id @default(autoincrement())
   text     String   @db.VarChar(150)
+  createdAt  DateTime @default(now())
   userId   Int
   user     User     @relation(fields: [userId], references: [id])
   messageId Int
   message   Message   @relation(fields: [messageId], references: [id])
+  likeCount  Int       @default(0)
+  dislikeCount Int     @default(0)
 }
 
 model Follow {
@@ -86,4 +97,3 @@ model Dislike {
   entityType EntityType
   entityId   Int
 }
-

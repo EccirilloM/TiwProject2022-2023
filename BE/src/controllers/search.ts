@@ -114,12 +114,11 @@ export const getTenRandomThreads = async (req: AuthRequest, res: Response) => {
   
       res.json(threads);
     } catch (error) {
-      console.error(error);
+      console.error("Errore:", error);  // Logga qualsiasi errore
       res.status(500).json({ message: "Internal server error" });
     }
   };
   
-
 export const getTenRandomUsers = async (req: AuthRequest, res: Response) => {
   try {
       // Ottieni tutti gli ID degli utenti
@@ -148,6 +147,9 @@ export const getTenRandomUsers = async (req: AuthRequest, res: Response) => {
               id: true,
               email: true,
               username: true,
+              name: true,
+            surname: true,
+            joinedAt: true,
               profileImage: true,
               following: true,
               followers: true,
@@ -163,33 +165,50 @@ export const getTenRandomUsers = async (req: AuthRequest, res: Response) => {
 };
   
 export const searchUsers = async (req: AuthRequest, res: Response) => {
-  try {
-    const searchTerm = req.query.term;
-
-    if (typeof searchTerm !== 'string') {
-        return res.status(400).json({ message: "Invalid search term" });
-    }
-
-    const users = await prisma.user.findMany({
-      where: {
-        username: {
-          contains: searchTerm,
+    try {
+      const searchTerm = req.query.term;
+      const loggedUserId = (req as any).user.id;  // l'id dell'utente loggato
+  
+      if (typeof searchTerm !== 'string') {
+          return res.status(400).json({ message: "Invalid search term" });
+      }
+  
+      const users = await prisma.user.findMany({
+        where: {
+          username: {
+            contains: searchTerm,
+          },
         },
-      },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        profileImage: true,
-        following: true,
-        followers: true,
-        threads: true
-      },
-    });
-
-    res.json(users);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          name: true,
+          surname: true,
+          joinedAt: true,
+          profileImage: true,
+          followers: {
+            select: {
+              followerId: true
+            }
+          }
+        },
+      });
+  
+      const usersWithFollowingInfo = users.map(user => {
+        // Verifica se l'utente loggato è in lista dei followers
+        const isFollowing = user.followers.some(follow => follow.followerId === loggedUserId);
+        
+        return {
+          ...user,
+          isFollowing: isFollowing
+        };
+      });
+  
+      res.json(usersWithFollowingInfo);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  

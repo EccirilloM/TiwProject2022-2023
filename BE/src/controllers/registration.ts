@@ -12,10 +12,12 @@ const validateEmail = (email) => {
 // Registration Controller
 export const registration = async (req, res) => {
   try {
-    let { username, password, email } = req.body;
+    let { username, password, email, description, name, surname } = req.body;
 
     username = username.trim(); // trim the username
     email = email.trim();
+    name = name.trim();
+    surname = surname.trim();
 
     if (!username || !password || !email) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -44,7 +46,11 @@ export const registration = async (req, res) => {
         username: username,
         password: password,
         email: email,
-        profileImage: "none.jpg"
+        description: description,
+        name: name,
+        surname: surname,
+        profileImage: "none.jpg",
+        joinedAt: new Date()
       },
     });
 

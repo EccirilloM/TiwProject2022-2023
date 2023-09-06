@@ -29,7 +29,6 @@ export class LoginComponent implements OnInit {
 
     this.authService.login({username: this.username, password: this.password}).subscribe({
       next:(response) => {
-        console.log(response);
         this.successMessage = 'Login successful';
         this.errorMessage = '';
 

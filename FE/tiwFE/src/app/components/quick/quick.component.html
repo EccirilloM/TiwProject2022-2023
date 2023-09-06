@@ -1,0 +1,75 @@
+<div class="w-full overflow-y-auto fixed h-screen">
+  <div class="overflow-y-auto fixed h-screen">
+    <div class="relative text-gray-300 w-80 p-5">
+      <button type="submit" class="absolute ml-4 mt-3 mr-4" (click)="performSearch()">
+        <span class="material-icons">
+          search
+        </span>
+      </button>
+      <input [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChanged()" type="search" name="search"
+        placeholder="Search Twitter"
+        class="bg-dim-700 h-10 px-10 pr-5 w-full rounded-full text-sm focus:outline-none bg-purple-white shadow rounded border-0">
+    </div>
+
+    <!-- RISULTATI RICERCA THREAD -->
+    <div class="max-w-sm rounded-lg bg-blueSoft overflow-hidden shadow-lg m-4" *ngIf="threadResults.length > 0">
+      <div class="flex">
+        <div class="flex-1 m-2">
+          <h2 class="px-4 py-2 text-xl w-48 font-semibold text-white">Threads</h2>
+        </div>
+      </div>
+      <hr class="border-gray-800">
+      <div class="flex hover:bg-gray-700" *ngFor="let thread of threadResults">
+        <div class="flex-1" (click)="navigateToThread(thread.id)">
+          <p class="px-4 ml-2 mt-3 w-48 text-xs text-gray-400">@{{ thread.user.username }}</p>
+          <h2 class="px-4 ml-2 w-48 font-bold text-white">{{ thread.title }}</h2>
+          <p class="px-4 ml-2 mb-3 w-48 text-xs text-gray-400">{{ thread.createdAt | date:'medium' }}</p>
+        </div>
+      </div>
+      <hr class="border-gray-800">
+    </div>
+
+    <!-- RISULTATI RICERCA UTENTI -->
+    <div class="max-w-sm rounded-lg bg-blueSoft overflow-hidden shadow-lg m-4" *ngIf="userResults.length > 0">
+      <div class="flex">
+        <div class="flex-1 m-2">
+          <h2 class="px-4 py-2 text-xl w-48 font-semibold text-white">Who to follow</h2>
+        </div>
+      </div>
+      <hr class="border-gray-800">
+      <div class="flex flex-shrink-0 hover:bg-gray-700" *ngFor="let user of userResults " >
+        <div class="flex-1 " (click)="navigateToProfile(user.username)">
+          <div class="flex items-center w-48">
+            <div>
+              <img class="inline-block h-10 w-10 rounded-full ml-4 mt-2" [src]="user.profileImageUrl" alt="">
+            </div>
+            <div class="ml-3 mt-3">
+              <p class="text-base leading-6 font-medium text-white">{{ user.name }} {{ user.surname }}</p>
+              <p class="text-sm leading-5 font-medium text-gray-400">@{{ user.username }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="flex-1 px-4 py-2 m-2">
+          <button
+            class="bg-transparent hover:bg-gray-800 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded-full"
+            (click)="handleFollow(user)">
+            {{ user.isFollowing ? 'Unfollow' : 'Follow' }}
+          </button>
+
+        </div>
+      </div>
+      <hr class="border-gray-800">
+    </div>
+    <div class="flow-root m-6 inline">
+      <div class="flex-1">
+        <a href="#">
+          <p class="text-sm leading-6 font-medium text-gray-500">Terms Privacy Policy Cookies Imprint Ads info
+          </p>
+        </a>
+      </div>
+      <div class="flex-2">
+        <p class="text-sm leading-6 font-medium text-gray-600">© 2020 Twitter, Inc.</p>
+      </div>
+    </div>
+  </div>
+</div>

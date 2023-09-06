@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProfileComponent } from './profile.component';
+import { QuickComponent } from './quick.component';
 
-describe('ProfileComponent', () => {
-  let component: ProfileComponent;
-  let fixture: ComponentFixture<ProfileComponent>;
+describe('QuickComponent', () => {
+  let component: QuickComponent;
+  let fixture: ComponentFixture<QuickComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProfileComponent ]
+      declarations: [ QuickComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ProfileComponent);
+    fixture = TestBed.createComponent(QuickComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

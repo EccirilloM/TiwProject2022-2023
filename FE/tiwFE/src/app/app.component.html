@@ -1,6 +1,26 @@
-<div *ngIf="(authService.isAuthenticated$ | async) && (router.url !== '/login')">
-  <app-head-bar></app-head-bar>
+<!-- Contenuto mostrato solo quando l'utente è autenticato -->
+<div *ngIf="(authService.isAuthenticated$ | async)">
+  <div class="flex min-h-screen bg-[#15202b]">
+
+    <!-- Sidebar (Navbar) -->
+    <div class="flex-none w-1/6 text-white h-screen sticky top-0 overflow-y-hidden">
+      <app-sidebar-test-twitter></app-sidebar-test-twitter>
+    </div>
+  
+    <!-- Main Content -->
+    <div class="flex-grow w-3/6 border border-y-0 border-gray-800 overflow-y-auto">
+      <router-outlet></router-outlet>
+    </div>
+  
+    <!-- Quick Component -->
+    <div class="flex-none w-2/6 h-screen overflow-y-auto">
+      <app-quick></app-quick>
+    </div>
+  </div>
 </div>
 
-<router-outlet></router-outlet>
-  
+<!-- Contenuto mostrato quando l'utente non è autenticato -->
+<div *ngIf="!(authService.isAuthenticated$ | async)">
+  <router-outlet></router-outlet>
+</div>
+
