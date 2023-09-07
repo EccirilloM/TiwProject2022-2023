@@ -16,7 +16,7 @@
             <a class="inline-block text-lg font-bold dark:text-white">@{{thread.user.username}}</a>
           </div>
           <!-- Data di creazione del Thread -->
-          <div class="text-slate-500 dark:text-slate-300 dark:text-slate-400">
+          <div class="text-slate-500 dark:text-slate-300">
             {{thread.createdAt | date:'medium'}}
           </div>
         </div>
@@ -126,13 +126,13 @@
                 class="w-20 h-20 object-cover rounded" />
               <div class="mt-4 flex items-center">
                 <!-- pulsante per aggiungere un commento -->
-                <div class="flex mr-2 text-white text-sm mr-3" (click)="toggleCommentInput(message.id)">
+                <div class="flex text-white text-sm mr-3" (click)="toggleCommentInput(message.id)">
                   <span class="material-icons">
                     chat
                   </span>
                   <!-- <span>{{message.comments.length || 0}}</span> -->
                 </div>
-                <div class="flex mr-2 text-white text-sm mr-3" [class.liked]="message && message.likeStatus === 'like'"
+                <div class="flex text-white text-sm mr-3" [class.liked]="message && message.likeStatus === 'like'"
                   (click)="handleLikeMessage(message.id.toString())">
                   <span class="material-icons">
                     thumb_up
@@ -140,7 +140,7 @@
                   <span>{{message.likeCount}}</span>
                 </div>
 
-                <div class="flex mr-2 text-white text-sm mr-8"
+                <div class="flex mr-2 text-white text-sm"
                   [class.disliked]="message && message.likeStatus === 'dislike'"
                   (click)="handleDislikeMessage(message.id.toString())">
                   <span class="material-icons">
