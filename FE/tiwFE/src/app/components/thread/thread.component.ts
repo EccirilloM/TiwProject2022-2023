@@ -20,9 +20,6 @@ export class ThreadComponent implements OnInit {
   selectedFile: File | null = null;  // Per l'invio
   showCommentInput: { [key: number]: boolean } = {};
   newCommentText: string = "";
-
-
-
   userImages: { [key: string]: string } = {}; // Oggetto per memorizzare le immagini del profilo
 
   constructor(private threadService: ThreadService, private userService: UserService, private likeService: LikeService, private route: ActivatedRoute) { }
@@ -43,15 +40,14 @@ export class ThreadComponent implements OnInit {
   }   
   
   loadThreadData(threadId: number): void {
-    // Non c'è bisogno di leggere l'ID del thread dall'URL; lo prendiamo come argomento
-  
+    console.log('Loading thread data for thread ID:', threadId);
     // Chiamata per ottenere le informazioni sul thread
     this.threadService.getThreadInfo(threadId).subscribe({
       next: (data) => {
         this.thread = data;
         
         // Chiamata per ottenere l'immagine dell'utente
-        this.userService.getUserWithImage(this.thread.user.username).subscribe({
+        this.userService.getUserBasicInfo(this.thread.user.username).subscribe({
           next: (userData) => {
             this.thread.user.profileImage = userData.profileImage;
           },
@@ -81,6 +77,7 @@ export class ThreadComponent implements OnInit {
   }
   
   loadMessages(threadId: number): void {
+    console.log('Inizio caricamento messaggi per thread ID:', threadId);
     // Chiamata per ottenere i messaggi del thread
     this.threadService.getThreadMessages(threadId).subscribe({
       next: (messagesData) => {
@@ -95,7 +92,7 @@ export class ThreadComponent implements OnInit {
   
         // Per ogni messaggio, carica l'immagine del profilo e del messaggio
         this.messages.forEach(message => {
-          this.userService.getUserWithImage(message.user.username).subscribe(user => {
+          this.userService.getUserBasicInfo(message.user.username).subscribe(user => {
             this.userImages[message.user.username] = user.profileImage;
           });
           if (message.image) {
@@ -122,7 +119,7 @@ export class ThreadComponent implements OnInit {
   }
 
   loadComments(messageId: number): void {
-    console.log(`Loading comments for message ${messageId}`);
+    console.log('Inizio caricamento commenti per messaggio ID:', messageId);
     // Chiamata per ottenere i commenti del messaggio
     this.threadService.getMessageComments(messageId).subscribe({
       next: (commentsData) => {
@@ -138,8 +135,12 @@ export class ThreadComponent implements OnInit {
         // Carica l'immagine del profilo per ogni commento
         this.comments[messageId].forEach(comment => {
           console.log(comment);
-          this.userService.getUserWithImage(comment.user.username).subscribe(user => {
+          this.userService.getUserBasicInfo(comment.user.username).subscribe(user => {
+            if (user) {
               this.userImages[comment.user.username] = user.profileImage; 
+            } else {
+              console.log("Utente non trovato per il commento", comment);
+            }
           });
           // Aggiungi questa parte per verificare lo stato del like per ogni commento
           this.likeService.checkLikeStatus(comment.id.toString(), 'comment').subscribe({
@@ -157,9 +158,55 @@ export class ThreadComponent implements OnInit {
       }
     });
   }
-  
- // In thread.ts
 
+    createMessage() {
+      if (!this.newMessageText.trim()) {
+        console.error('Il testo del messaggio non può essere vuoto.');
+        return;
+      }
+
+      this.userService.createMessage(this.newMessageText.trim(), this.thread.id).subscribe({
+        next: newMessage => {
+          this.newMessageText = ''; 
+          if (this.selectedFile) {
+            this.userService.uploadMessageImage(newMessage.id, this.selectedFile).subscribe({
+              next: response => {
+                this.previewImage = null; 
+                this.loadMessages(this.thread.id);  // Riaggiorna la lista dei messaggi
+              },
+              error: err => {
+                console.error("Errore durante l'upload dell'immagine:", err);
+                this.loadMessages(this.thread.id);  // Riaggiorna la lista dei messaggi anche in caso di errore
+              }
+            });
+          } else {
+            this.loadMessages(this.thread.id);  // Riaggiorna la lista dei messaggi
+          }
+        },
+        error: err => {
+          console.error("Impossibile inviare il messaggio:", err);
+        }
+      });
+  }
+
+  createComment(messageId: number, commentText: string): void {
+      if (!commentText.trim()) {
+        console.error('Il testo del commento non può essere vuoto.');
+        return;
+      }
+
+      this.userService.createComment(commentText.trim(), messageId).subscribe({
+        next: newComment => {
+          this.loadComments(messageId);  // Riaggiorna la lista dei commenti per il messaggio specifico
+        },
+        error: err => {
+          console.error('Errore nella creazione del commento:', err);
+        }
+      });
+  }
+
+
+  
   handleLikeThread(threadId: string): void {
     this.likeService.handleLikeComponents(threadId, 'thread', [this.thread]);
     console.log("Tentativo di mettere 'Mi piace' al thread con ID:", threadId);
@@ -174,13 +221,11 @@ export class ThreadComponent implements OnInit {
 
   handleLikeMessage(messageId: string): void {
     this.likeService.handleLikeComponents(messageId, 'message', this.messages);
-    console.log("Tentativo di mettere 'Mi piace' al messaggio con ID:", messageId);
     this.loadMessages(Number(this.thread.id));
   }
 
   handleDislikeMessage(messageId: string): void {
     this.likeService.handleDislikeComponents(messageId, 'message', this.messages);
-    console.log("Tentativo di mettere 'Non mi piace' al messaggio con ID:", messageId);
     this.loadMessages(Number(this.thread.id));
   }
 
@@ -194,35 +239,6 @@ export class ThreadComponent implements OnInit {
     this.likeService.handleDislikeComponents(commentId, 'comment', this.comments[messageId] || []);
     console.log("Tentativo di mettere 'Non mi piace' al commento con ID:", commentId);
     this.loadComments(messageId);
-  }
-
-  createMessage() {
-    console.log("Invio messaggio:", this.newMessageText); // Debug
-  
-    // Prima crea il messaggio
-    this.userService.createMessage(this.newMessageText, this.thread.id).subscribe({
-      next: (newMessage) => {
-        this.messages.push(newMessage);
-        this.newMessageText = '';  // Svuota il campo di testo
-  
-        // Ora che abbiamo l'ID del nuovo messaggio, carichiamo l'immagine
-        if (this.selectedFile) {  // Modificato da this.previewImage a this.selectedFile
-          this.userService.uploadMessageImage(newMessage.id, this.selectedFile).subscribe({
-            next: (response) => {
-              // Aggiorna l'elenco dei messaggi, se necessario
-              newMessage.image = `${this.userService.backEndUrl}/messageImages/${newMessage.id}.jpeg?${Date.now()}`;
-              this.previewImage = null;  // Pulisce l'anteprima dell'immagine
-            },
-            error: (err) => {
-              console.error("Errore durante l'upload dell'immagine", err);
-            }
-          });
-        }
-      },
-      error: (err) => {
-        console.error("Impossibile inviare il messaggio", err);
-      }
-    });
   }
 
   onFileSelected(event: Event) {
@@ -245,36 +261,7 @@ export class ThreadComponent implements OnInit {
     this.selectedFile = null;  // Aggiunto
   }
   
-  createComment(messageId: number, commentText: string): void {
-    // Dati per creare il nuovo commento
-    const newCommentData = {
-      text: commentText,
-      // altri dati necessari, come ad esempio l'ID del thread o l'ID dell'utente
-    };
-  
-    // Chiamata al servizio per creare il nuovo commento
-    this.userService.createComment(commentText, messageId).subscribe({
-      next: (newComment) => {
-        // Aggiunge il nuovo commento all'array dei commenti per quel particolare messaggio
-        if (this.comments[messageId]) {
-          this.comments[messageId].push(newComment);
-        } else {
-          this.comments[messageId] = [newComment];
-        }
-  
-        // Eventualmente, potete anche ordinare i commenti qui
-      },
-      error: (err) => {
-        console.error('Errore nella creazione del commento:', err);
-      }
-    });
-  } 
-
   toggleCommentInput(messageId: number): void {
     this.showCommentInput[messageId] = !this.showCommentInput[messageId];
   }
 }
-
-
-
-

@@ -8,7 +8,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { LoginComponent } from './components/login/login.component';
-import { SearchComponent } from './components/search/search.component';
 import { ThreadComponent } from './components/thread/thread.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { ConfirmChangeImageComponent } from './components/confirm-change-image/confirm-change-image.component';
@@ -26,7 +25,6 @@ import { QuickComponent } from './components/quick/quick.component';
     AppComponent,
     RegistrationComponent,
     LoginComponent,
-    SearchComponent,
     ThreadComponent,
     NotFoundComponent,
     ConfirmChangeImageComponent,

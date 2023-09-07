@@ -29,7 +29,7 @@ export class ConfirmChangeImageComponent implements OnInit {
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
-      this.userService.updatePhoto(this.username, file).subscribe({
+      this.userService.updateProfileImage(this.username, file).subscribe({
         next: (response) => {
           // Se arriva qui, la risposta è stata di successo (status HTTP 2xx)
           this.router.navigate(['/profile', this.username]);

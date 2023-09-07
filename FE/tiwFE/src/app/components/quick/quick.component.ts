@@ -79,10 +79,6 @@ export class QuickComponent implements OnInit{
     this.userService.handleFollow(user.id).subscribe(
       response => {
         user.isFollowing = !user.isFollowing;  // Aggiorna lo stato di "following"
-        
-        // Aggiorna il conteggio dei follower
-        const newFollowerCount = user.isFollowing ? this.userService.getFollowerCount() + 1 : this.userService.getFollowerCount() - 1;
-        this.userService.updateFollowerCount(newFollowerCount);
       },
       error => {
         console.error("Si è verificato un errore durante il follow/unfollow", error);

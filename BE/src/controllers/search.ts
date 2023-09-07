@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 
 const prisma = new PrismaClient();
 
+//Funzione per ritornarmi 10 thread randomici nel DB
 export const getTenRandomThreads = async (req: AuthRequest, res: Response) => {
     try {
       const allThreadIds = await prisma.thread.findMany({
@@ -63,9 +64,10 @@ export const getTenRandomThreads = async (req: AuthRequest, res: Response) => {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
     }
-  };
+};
   
-  export const searchThread = async (req: AuthRequest, res: Response) => {
+//Funzione per cercare il thread dinamicamente
+export const searchThread = async (req: AuthRequest, res: Response) => {
     try {
       const searchTerm = req.query.term;
   
@@ -117,8 +119,9 @@ export const getTenRandomThreads = async (req: AuthRequest, res: Response) => {
       console.error("Errore:", error);  // Logga qualsiasi errore
       res.status(500).json({ message: "Internal server error" });
     }
-  };
-  
+};
+ 
+//Funzione per ritornarmi 10 User randomici nel DB
 export const getTenRandomUsers = async (req: AuthRequest, res: Response) => {
   try {
       // Ottieni tutti gli ID degli utenti
@@ -164,6 +167,7 @@ export const getTenRandomUsers = async (req: AuthRequest, res: Response) => {
   }
 };
   
+//Funzione per cercare il thread dinamicamente
 export const searchUsers = async (req: AuthRequest, res: Response) => {
     try {
       const searchTerm = req.query.term;

@@ -5,7 +5,33 @@ import { AuthRequest } from './types';
 
 const prisma = new PrismaClient();
 
-export const getUser = async (req: AuthRequest, res: Response) => {
+//Metodo per ritornarmi le informazioni basiche sull'utente
+export const getUserBasicInfo = async (req: Request, res: Response) => {
+  try {
+    const { username } = req.params;
+    
+    const user = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+      select: {
+        username: true,
+        name: true,
+        surname: true,
+        profileImage: true,
+        joinedAt: true,
+      },
+    });
+
+    if (!user) return res.status(404).send('User not found');
+    res.json(user);
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+};
+
+//Metodo che mi ritorna tutte le informazioni sull'utente, lo uso solo per la pagina profilo
+export const getUserAllInfo = async (req: AuthRequest, res: Response) => {
   try {
     const {username} = req.params;
 
@@ -96,7 +122,8 @@ export const getUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updatePhoto = async (req: AuthRequest, res: Response) => {
+//Metodo per aggiornare l'immagine profilo
+export const updateProfileImage = async (req: AuthRequest, res: Response) => {
   if (!req.file) {
       res.status(400).send('No file uploaded.');
       return;
@@ -127,6 +154,7 @@ export const updatePhoto = async (req: AuthRequest, res: Response) => {
   }
 };
 
+//Metodo per gestire il follow/unfollow
 export const handleFollow = async (req: AuthRequest, res: Response) => {
   try {
     const followerId = (req as any).user.id;
@@ -179,6 +207,7 @@ export const handleFollow = async (req: AuthRequest, res: Response) => {
   }
 };
 
+//Metodo per vedere se un utente segue già un altro utente
 export const isFollowing = async (req: AuthRequest, res: Response) => {
   try {
     const username = req.params.username;
@@ -213,6 +242,7 @@ export const isFollowing = async (req: AuthRequest, res: Response) => {
   }
 };
 
+//Metodo per gestire il like
 export const handleLike = async (req: AuthRequest, res: Response) => {
   const { entityId, entityType } = req.body;
   const userId = req.user.id;
@@ -301,6 +331,7 @@ export const handleLike = async (req: AuthRequest, res: Response) => {
   }
 };
 
+//Metodo per gestire il Dislike
 export const handleDislike = async (req: AuthRequest, res: Response) => {
   const { entityId, entityType } = req.body;
   const userId = req.user.id;
@@ -388,6 +419,7 @@ export const handleDislike = async (req: AuthRequest, res: Response) => {
   }
 };
 
+//Metodo per vedere se l'utente ha giò messo like ad un'entità
 export const checkLikeStatus = async (req: AuthRequest, res: Response) => {
   try {
     const entityId = req.params.entityId;
@@ -420,7 +452,6 @@ export const checkLikeStatus = async (req: AuthRequest, res: Response) => {
   }
 };
 
-
 // Metodo per creare un Thread
 export const createThread = async (req: AuthRequest, res: Response) => {
   const { title } = req.body;
@@ -440,7 +471,7 @@ export const createThread = async (req: AuthRequest, res: Response) => {
   }
 };
 
-
+// Metodo per creare un Messaggio
 export const createMessage = async (req: AuthRequest, res: Response) => {
   const text = req.body.text;
   const threadId = parseInt(req.params.threadId);
@@ -480,6 +511,7 @@ export const createMessage = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Metodo per uploudare l'immagine del messaggio
 export const uploadMessageImage = async (req: AuthRequest, res: Response) => {
   const messageId = parseInt(req.params.messageId);
   if (!req.file) {
@@ -504,7 +536,7 @@ export const uploadMessageImage = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Metodo per creare un Comment
+// Metodo per creare un Commento
 export const createComment = async (req: AuthRequest, res: Response) => {
   const { text } = req.body;
   const messageId = parseInt(req.params.messageId);

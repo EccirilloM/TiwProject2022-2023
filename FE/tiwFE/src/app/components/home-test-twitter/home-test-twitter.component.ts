@@ -20,14 +20,14 @@ export class HomeTestTwitterComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadThreads();
-    this.loadLoggedInUser();
+    this.loadUserLoggedBasicInfo();
   }
   
   // Metodo per caricare le informazioni dell'utente loggato
-  loadLoggedInUser(): void {
+  loadUserLoggedBasicInfo(): void {
     const username = this.authService.getUsernameLogged();
     if(username) {
-      this.userService.getUserWithImage(username).subscribe({
+      this.userService.getUserBasicInfo(username).subscribe({
         next: data => {
           this.loggedInUser = data;
         },

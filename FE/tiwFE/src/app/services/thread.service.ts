@@ -41,15 +41,14 @@ export class ThreadService {
     });
   }
 
-
-  // Nuovo: Ottieni tutti i messaggi di un thread specifico
+  // Ottieni tutti i messaggi di un thread specifico
   getThreadMessages(threadId: number): Observable<any> {
     return this.http.get<any>(`${this.backEndUrl}/api/thread/${threadId}/messages`, {
       headers: this.authService.getHttpHeaders()
     });
   }
 
-  // Nuovo: Ottieni tutti i commenti di un messaggio specifico
+  // Ottieni tutti i commenti di un messaggio specifico
   getMessageComments(messageId: number): Observable<any> {
     return this.http.get<any>(`${this.backEndUrl}/api/thread/getMessageComments/${messageId}`, {
       headers: this.authService.getHttpHeaders()

@@ -36,7 +36,7 @@ export class ProfileTestTwitterComponent {
         if (username === null) {
           return EMPTY;
         }
-        return this.userService.getUser(username);
+        return this.userService.getUserAllInfo(username);
       })
     ).subscribe({
       next: user => this.handleUserData(user),
@@ -47,7 +47,7 @@ export class ProfileTestTwitterComponent {
   getUser(): void {
     const username = this.route.snapshot.paramMap.get('username');
     if (username) {
-      this.userService.getUser(username).subscribe({
+      this.userService.getUserAllInfo(username).subscribe({
         next: user => this.handleUserData(user),
         error: error => console.error('There was an error!', error),
       });

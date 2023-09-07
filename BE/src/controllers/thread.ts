@@ -4,6 +4,7 @@ import { Response } from 'express';
 
 const prisma = new PrismaClient();
 
+//Funzione che mi ritorna 10 thread propri e degli utenti che segue l'utente loggato, se ne vuoi di più te ne ritorna altri 10 e così via
 export const getTenThreadsFollowingAndPropriate = async (req: AuthRequest, res: Response) => {
     try {
         const userId = req.user.id; 
@@ -73,6 +74,7 @@ export const getTenThreadsFollowingAndPropriate = async (req: AuthRequest, res: 
     }
 };
 
+//Funzione che mi ritorna le informazioni del thread
 export const getThreadInfo = async (req: AuthRequest, res: Response) => {
     try {
       const threadId = parseInt(req.params.threadId, 10);
@@ -101,8 +103,9 @@ export const getThreadInfo = async (req: AuthRequest, res: Response) => {
     } catch (error) {
       res.status(500).json({ message: 'Errore nel recuperare le informazioni sul thread.', error: error.message });
     }
-  };
+};
 
+//Funzione che mi ritorna i messaggi del thread specifico
 export const getThreadMessages = async (req: AuthRequest, res: Response) => {
   try {
     const threadId = parseInt(req.params.threadId, 10);
@@ -131,6 +134,7 @@ export const getThreadMessages = async (req: AuthRequest, res: Response) => {
   }
 };
 
+//Funzione che mi ritorna i commenti dei messaggi
 export const getMessageComments = async (req: AuthRequest, res: Response) => {
   try {
     const messageId = parseInt(req.params.messageId, 10);

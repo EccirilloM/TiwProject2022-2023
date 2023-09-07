@@ -29,13 +29,13 @@ export class SidebarTestTwitterComponent {
       let navigationEndEvent = event as NavigationEnd;
       this.currentRoute = navigationEndEvent.urlAfterRedirects.split('/')[1];
     });
-    this.getUser();
+    this.getUserLogged();
   }
 
-  getUser(): void {
+  getUserLogged(): void {
     const username = this.authService.getUsernameLogged();
     if(username){
-      this.userService.getUserWithImage(username).subscribe({
+      this.userService.getUserBasicInfo(username).subscribe({
         next: (user) => {
           this.user = user;
         },

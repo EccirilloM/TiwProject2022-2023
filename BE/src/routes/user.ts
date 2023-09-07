@@ -7,8 +7,9 @@ const router = express.Router();
 router.use(express.json());
 
 //FAI UN CONTROLLER PER OGNI END-POINT
-router.get("/getUser/:username",[authMiddleware], controller.getUser);
-router.post("/updatePhoto", [authMiddleware, upload], controller.updatePhoto);
+router.get("/getUserBasicInfo/:username", controller.getUserBasicInfo);
+router.get("/getUserAllInfo/:username",[authMiddleware], controller.getUserAllInfo);
+router.post("/updateProfileImage", [authMiddleware, upload], controller.updateProfileImage);
 router.post("/handleFollow", [authMiddleware], controller.handleFollow);
 router.get("/:username/following", [authMiddleware], controller.isFollowing);
 router.post("/createThread", [authMiddleware], controller.createThread);

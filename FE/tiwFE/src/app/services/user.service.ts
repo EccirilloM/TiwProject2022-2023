@@ -10,13 +10,19 @@ import { BehaviorSubject } from 'rxjs';
 export class UserService {
 
   public backEndUrl = "http://localhost:3000";
-  private followerCount: number = 0;
-  public followerCountSubject = new BehaviorSubject<number>(0);
 
    constructor(private http: HttpClient, private authService: AuthService) { }
 
-  getUserWithImage(username: string): Observable<any> {
-    return this.getUser(username).pipe(
+  //GETTER PER UTENTI
+  getUserAllInfo(username: string): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/user/getUserAllInfo/${username}`, {
+      headers: this.authService.getHttpHeaders(),
+    });
+  }  
+
+  // Nel tuo UserService
+  getUserBasicInfo(username: string): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/user/getUserBasicInfo/${username}`).pipe(
       map(user => {
         user.profileImage = `${this.backEndUrl}/profilePictures/${user.profileImage}?${Date.now()}`;
         return user;
@@ -24,25 +30,8 @@ export class UserService {
     );
   }
 
-  setFollowerCount(count: number) {
-    this.followerCount = count;
-  }
-
-  getFollowerCount(): number {
-    return this.followerCount;
-  }
-
-  updateFollowerCount(newCount: number) {
-    this.followerCountSubject.next(newCount);
-  }
-
-  getUser(username: string): Observable<any> {
-    return this.http.get<any>(`${this.backEndUrl}/api/user/getUser/${username}`, {
-      headers: this.authService.getHttpHeaders(),
-    });
-  }  
-
-  updatePhoto(username: string, image: File): Observable<any> {
+  //UPDATE IMMAGINE PROFILO
+  updateProfileImage(username: string, image: File): Observable<any> {
     const formData = new FormData();
     formData.append('username', username);
     formData.append('photo', image);
@@ -50,7 +39,20 @@ export class UserService {
     const headers = new HttpHeaders({
         'Authorization': `Bearer ${this.authService.getToken()}`,
     });
-    return this.http.post(`${this.backEndUrl}/api/user/updatePhoto`, formData, { headers });
+    return this.http.post(`${this.backEndUrl}/api/user/updateProfileImage`, formData, { headers });
+  }
+
+  //RICERCA UTENTE
+  searchUsers(searchTerm: string): Observable<any> {
+    return this.http.get<any>(`${this.backEndUrl}/api/search/user?term=${searchTerm}`, {
+      headers: this.authService.getHttpHeaders()
+    });
+  }
+
+  //FOLLOW
+  handleFollow(followedId: string): Observable<any> {
+    const headers = this.authService.getHttpHeaders();
+    return this.http.post(`${this.backEndUrl}/api/user/handleFollow`, { followedId }, { headers });
   }
 
   isFollowing(username: string): Observable<boolean> {
@@ -63,35 +65,7 @@ export class UserService {
     );
   }
 
-  getAllUsers(): Observable<any> {
-    return this.http.get<any>(`${this.backEndUrl}/api/user/getAllUsers`, {
-      headers: this.authService.getHttpHeaders(),
-    });
-  }
-
-  searchUsers(searchTerm: string): Observable<any> {
-    return this.http.get<any>(`${this.backEndUrl}/api/search/user?term=${searchTerm}`, {
-      headers: this.authService.getHttpHeaders()
-    });
-  }
-
-  getTenRandomUsers(): Observable<any> {
-    return this.http.get<any>(`${this.backEndUrl}/api/search/randomUsers`, {
-        headers: this.authService.getHttpHeaders()
-    });
-  }
-
-  handleFollow(followedId: string): Observable<any> {
-    const headers = this.authService.getHttpHeaders();
-    return this.http.post(`${this.backEndUrl}/api/user/handleFollow`, { followedId }, { headers });
-  }
-
-
-  checkLikeStatus(threadId: string): Observable<any> {
-    const headers = this.authService.getHttpHeaders();
-    return this.http.get<any>(`${this.backEndUrl}/api/user/likeStatus/${threadId}`, { headers });
-  }
-
+  //CREATE 
   createMessage(text: string, threadId: number): Observable<any> {
     const formData = new FormData();
     formData.append('text', text);
@@ -118,5 +92,4 @@ export class UserService {
       headers: this.authService.getHttpHeaders()
     });
   }
-  
 }

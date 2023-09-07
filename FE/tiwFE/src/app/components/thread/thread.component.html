@@ -4,7 +4,6 @@
 <div *ngIf="thread" class="wrapper pt-10 px-8 flex flex-col items-center w-full">
   <!-- Card-->
   <article class="mb-4 break-inside p-6 rounded-xl bg-white dark:bg-slate-800 flex flex-col bg-clip-border w-full">
-    <!-- Altro pezzo di codice -->
     <div class="flex pb-6 items-center justify-between">
       <div class="flex">
         <a class="inline-block mr-4">
@@ -113,6 +112,7 @@
           <div class="flex items-start px-4 py-6">
             <img class="w-12 h-12 rounded-full object-cover mr-4 shadow" [src]="userImages[message.user.username]"
               alt="Profile Image">
+
             <div class="">
               <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold text-gray-400 -mt-1" *ngIf="message.user">{{ message.user.username }}
@@ -185,7 +185,8 @@
             <div class="media flex pb-2 bg-gray-500 rounded-tl-lg rounded-tr-lg rounded-bl-lg rounded-br-lg">
               <a class="mr-2">
                 <img *ngIf="comment.user" class="rounded-full max-w-none w-8 h-8"
-                  [src]="userImages[comment.user.username]" />
+                  [src]="userImages[comment.user.username]" alt="Profile Image">
+
               </a>
               <div class="media-body text-sm">
                 <div>
@@ -198,25 +199,22 @@
                   <button class="inline-flex items-center py-1 mr-2" [class.liked]="comment.likeStatus === 'like'"
                     (click)="handleLikeComment(comment.id.toString(), message.id)">
                     <span class="mr-1">
-                      <span class="material-icons text-xs">favorite</span>
+                      <span class="material-icons text-xs">thumb_up</span>
                     </span>
                     <!-- <span class="text-base font-bold text-xs">{{ comment.likeCount }}</span> -->
                   </button>
                   <a class="inline-flex items-center py-1 mr-2" [class.disliked]="comment.likeStatus === 'dislike'"
                     (click)="handleDislikeComment(comment.id.toString(), message.id)">
                     <span class="mr-1">
-                      <span class="material-icons text-xs">favorite_border</span>
+                      <span class="material-icons text-xs">thumb_down</span>
                     </span>
                     <!-- <span class="text-base font-bold text-xs">{{ comment.dislikeCount }}</span> -->
                   </a>
                 </div>
-
-
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
     <!-- End Comments content -->

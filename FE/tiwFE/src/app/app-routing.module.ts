@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegistrationComponent } from './components/registration/registration.component';
-import { SearchComponent } from './components/search/search.component';
 import { ThreadComponent } from './components/thread/thread.component';
 import { ConfirmChangeImageComponent } from './components/confirm-change-image/confirm-change-image.component';
 import { HomeTestTwitterComponent } from './components/home-test-twitter/home-test-twitter.component';
